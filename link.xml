@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<linker>
+	<assembly fullname="Nox.CCK.Settings" preserve="all" />
+	<assembly fullname="Nox.Mods.Settings" preserve="all" />
+	<assembly fullname="Nox.Settings" preserve="all" />
+	<assembly fullname="Nox.Settings.Runtime" preserve="all" />
+</linker>

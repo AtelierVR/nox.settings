@@ -1,0 +1,48 @@
+{
+  "type": "mod",
+  "id": "nox.settings",
+  "provides": [
+    "fr.hactazia.sdk.settings",
+    "settings"
+  ],
+  "name": "Settings",
+  "version": "1.0.0",
+  "description": "Provides the Settings for the game.",
+  "license": "GPL-3.0",
+  "icon": null,
+  "contact": {
+    "email": "hactazia@gmail.com",
+    "source": "https://github.com/AtelierVR/nox.settings",
+    "website": "https://nox.hactazia.fr/",
+    "issues": "https://github.com/AtelierVR/nox.settings/issues"
+  },
+  "authors": [
+    {
+      "name": "Hactazia",
+      "email": "hactazia@gmail.com",
+      "website": "https://hactazia.fr/"
+    }
+  ],
+  "contributors": [],
+  "relations": [
+    {
+      "id": "ui",
+      "type": "depends",
+      "version": ">=1.0.0"
+    }
+  ],
+  "constraints": [
+    {
+      "type": "after",
+      "id": "ui"
+    }
+  ],
+  "entrypoints": {
+    "main": [
+      "api.nox.settings.Main"
+    ],
+    "client": [
+      "api.nox.settings.Client"
+    ]
+  }
+}
