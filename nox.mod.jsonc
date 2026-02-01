@@ -39,10 +39,10 @@
   ],
   "entrypoints": {
     "main": [
-      "api.nox.settings.Main"
+      "Nox.Settings.Runtime.Main"
     ],
     "client": [
-      "api.nox.settings.Client"
+      "Nox.Settings.Clients.Client"
     ]
   }
 }
