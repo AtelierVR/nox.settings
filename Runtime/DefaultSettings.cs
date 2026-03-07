@@ -9,10 +9,12 @@ namespace Nox.Settings.Runtime {
 				new Brightness(),
 				new BloomIntensity(),
 				new Quality(),
-				new AntiAliasing(),
+				new MSSA(),
 				new Resolution(),
 				new WindowSize(),
-				new ModalTesting()
+				new ModalTesting(),
+				new AntiAliasing(),
+				new Framerate()
 			};
 
 		public static (string, string, string) Split(this IHandler handler) {

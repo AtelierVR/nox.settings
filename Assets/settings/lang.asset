@@ -59,6 +59,14 @@ MonoBehaviour:
       value: "Quality"
     - key: settings.entry.graphic.anti_aliasing.label
       value: "Anti-Aliasing"
+    - key: settings.entry.graphic.anti_aliasing.option.none
+      value: "No Anti-aliasing"
+    - key: settings.entry.graphic.anti_aliasing.option.fast_approximate_antialiasing
+      value: "Fast Approximate Anti-aliasing (FXAA)"
+    - key: settings.entry.graphic.anti_aliasing.option.subpixel_morphological_anti_aliasing
+      value: "Subpixel Morphological Anti-aliasing (SMAA)"
+    - key: settings.entry.graphic.anti_aliasing.option.temporal_anti_aliasing
+      value: "Temporal Anti-aliasing (TAA)"
     - key: settings.entry.graphic.resolution.label
       value: "Resolution"
     - key: settings.entry.graphic.window_size.label
@@ -73,13 +81,15 @@ MonoBehaviour:
       value: "{0}x{1}"
     - key: settings.entry.graphic.resolution.option.current
       value: "{0}x{1} (Dynamic)"
-    - key: settings.entry.graphic.anti_aliasing.option.off
+    - key: settings.entry.graphic.msaa.label
+      value: "MSAA"
+    - key: settings.entry.graphic.msaa.option.off
       value: "Off"
-    - key: settings.entry.graphic.anti_aliasing.option.x2
+    - key: settings.entry.graphic.msaa.option.x2
       value: "2x"
-    - key: settings.entry.graphic.anti_aliasing.option.x4
+    - key: settings.entry.graphic.msaa.option.x4
       value: "4x"
-    - key: settings.entry.graphic.anti_aliasing.option.x8
+    - key: settings.entry.graphic.msaa.option.x8
       value: "8x"
     - key: settings.page.debug.label
       value: "Debug"
@@ -91,6 +101,20 @@ MonoBehaviour:
       value: "Example Modal"
     - key: settings.debug.modal.open
       value: "Open"
+    - key: settings.entry.performances.framerate.option.vsync
+      value: "V-Sync"
+    - key: settings.entry.performances.framerate.option.uncapped
+      value: "Unlimited"
+    - key: settings.range.value.framerate
+      value: "{0} FPS"
+    - key: settings.entry.performances.framerate.label
+      value: "Framerate"
+    - key: settings.group.performances.general.label
+      value: "General"
+    - key: settings.page.performances.title
+      value: "Performance Settings"
+    - key: settings.page.performances.label
+      value: "Performance"
   - IETF: fr-FR
     entries:
     - key: settings.page.accessibility.title
@@ -145,13 +169,15 @@ MonoBehaviour:
       value: "Fenêtre"
     - key: settings.entry.graphic.resolution.option
       value: "{0}x{1}"
-    - key: settings.entry.graphic.anti_aliasing.option.off
+    - key: settings.entry.graphic.msaa.label
+      value: "MSSA"
+    - key: settings.entry.graphic.msaa.option.off
       value: "Désactivé"
-    - key: settings.entry.graphic.anti_aliasing.option.x2
+    - key: settings.entry.graphic.msaa.option.x2
       value: "2x"
-    - key: settings.entry.graphic.anti_aliasing.option.x4
+    - key: settings.entry.graphic.msaa.option.x4
       value: "4x"
-    - key: settings.entry.graphic.anti_aliasing.option.x8
+    - key: settings.entry.graphic.msaa.option.x8
       value: "8x"
     - key: settings.page.debug.label
       value: "Débogage"

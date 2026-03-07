@@ -164,11 +164,19 @@ namespace Nox.Settings.Clients {
 			foreach (var group in groups) {
 				var groupBox = (await InstantiateAsync(box, content)).FirstOrDefault();
 				if (!groupBox) continue;
+				groupBox.transform.localPosition = Vector3.zero;
+				groupBox.transform.localRotation = Quaternion.identity;
+				groupBox.transform.localScale = Vector3.one;
+				
 				var cont = Reference.GetComponent<RectTransform>("content", groupBox);
 				var text = Reference.GetComponent<TextLanguage>("text", groupBox);
 				text.UpdateText(group.GetLabel());
 				var listBox = (await InstantiateAsync(list, cont)).FirstOrDefault();
 				if (!listBox) continue;
+				listBox.transform.localPosition = Vector3.zero;
+				listBox.transform.localRotation = Quaternion.identity;
+				listBox.transform.localScale = Vector3.one;
+				
 				cont = Reference.GetComponent<RectTransform>("content", listBox);
 				var menu = Page.GetMenu();
 				foreach (var handler in group.Handlers) {
@@ -181,6 +189,9 @@ namespace Nox.Settings.Clients {
 
 					handlerBox.name = $"{handler.GetPath().LastOrDefault()}_{handlerBox.GetInstanceID()}";
 					handlerBox.SetActive(true);
+					handlerBox.transform.localPosition = Vector3.zero;
+					handlerBox.transform.localRotation = Quaternion.identity;
+					handlerBox.transform.localScale = Vector3.one;
 				}
 			}
 

@@ -22,10 +22,10 @@ namespace Nox.Settings.Handlers {
 		public static string[] GetConfigHeightPath()
 			=> GetConfigPath("height");
 
-		protected override GameObject GetPrefab()
+		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/dropdown.prefab");
 
-		protected override IModalBuilder GetModalBuilder(IMenu menu)
+		override protected IModalBuilder GetModalBuilder(IMenu menu)
 			=> Client.UiAPI.MakeModal(menu);
 
 		public Resolution() {
@@ -83,7 +83,7 @@ namespace Nox.Settings.Handlers {
 				.ToDictionary(t => t.Item1, t => t.Item2);
 
 
-		protected override void OnValueChanged(string value) {
+		override protected void OnValueChanged(string value) {
 			var res = FromString(value);
 			Value = new Vector2Int(res.x, res.y);
 			SetButtonText("settings.entry.graphic.resolution.option", res.x.ToString(), res.y.ToString());

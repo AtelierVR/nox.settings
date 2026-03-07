@@ -16,7 +16,7 @@ namespace Nox.Settings.Handlers {
 			SetValueKey("settings.range.value.percent");
 		}
 
-		public float Value {
+		public static float Value {
 			get
 				=> Config.Load()
 					.Get(

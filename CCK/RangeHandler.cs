@@ -76,10 +76,10 @@ namespace Nox.CCK.Settings {
 				_textLabel.UpdateText(key);
 		}
 
-		public void SetTypeKey(string key) {
+		public void SetTypeKey(string key, params string[] @params) {
 			_keyType = key;
 			if (_textType)
-				_textType.UpdateText(key);
+				_textType.UpdateText(key, @params);
 		}
 
 		public void SetValueKey(string key) {

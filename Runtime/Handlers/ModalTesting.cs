@@ -10,7 +10,7 @@ namespace Nox.Settings.Handlers {
 		public override string[] GetPath()
 			=> new[] { "debug", "modal" };
 
-		protected override GameObject GetPrefab()
+		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/button.prefab");
 
 		public override GameObject GetContent(RectTransform transform, IMenu menu) {

@@ -7,7 +7,8 @@
         "Nox.Settings",
         "Nox.Controllers",
         "Nox.UI",
-        "Nox.CCK.Settings"
+        "Nox.CCK.Settings",
+        "Unity.RenderPipelines.Universal.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
