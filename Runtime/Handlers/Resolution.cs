@@ -29,12 +29,15 @@ namespace Nox.Settings.Handlers {
 			=> Client.UiAPI.MakeModal(menu);
 
 		public Resolution() {
-			SetInteractable(false);
 			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
 			SetOptions(GetAvailableResolutions());
 			var v = Value;
 			Value = v;
 			SetButtonText("settings.entry.graphic.resolution.option", v.x.ToString(), v.y.ToString());
+			#if UNITY_EDITOR
+			// In editor, disable edition since changing window mode can cause focus issues.
+			SetInteractable(false);
+			#endif
 		}
 
 		public static Vector2Int Value {
@@ -45,6 +48,7 @@ namespace Nox.Settings.Handlers {
 				return new Vector2Int(width, height);
 			}
 			set {
+				#if !UNITY_EDITOR
 				var config = Config.Load();
 				var screen = Screen.currentResolution;
 				var mode   = Screen.fullScreenMode;
@@ -54,6 +58,7 @@ namespace Nox.Settings.Handlers {
 				config.Set(GetConfigWidthPath(), value.x);
 				config.Set(GetConfigHeightPath(), value.y);
 				config.Save();
+				#endif
 			}
 		}
 

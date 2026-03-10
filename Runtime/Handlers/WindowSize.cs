@@ -18,8 +18,7 @@ namespace Nox.Settings.Handlers {
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "window_mode" };
-
-
+		
 		private static Dictionary<string, string[]> GetAvailableSize()
 			=> new() {
 				[Fullscreen] = new[] { "settings.entry.graphic.window_size.option.fullscreen" },
@@ -27,24 +26,21 @@ namespace Nox.Settings.Handlers {
 				[Windowed]   = new[] { "settings.entry.graphic.window_size.option.windowed" }
 			};
 
-		protected override GameObject GetPrefab()
+		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/dropdown.prefab");
 
-		protected override IModalBuilder GetModalBuilder(IMenu menu)
+		override protected IModalBuilder GetModalBuilder(IMenu menu)
 			=> Client.UiAPI.MakeModal(menu);
 
-		public override GameObject GetContent(RectTransform transform, IMenu menu) {
-			var go = base.GetContent(transform, menu);
-			SetInteractable(menu is IModalMenu);
-			return go;
-		}
-
 		public WindowSize() {
-			SetInteractable(false);
 			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
 			SetOptions(GetAvailableSize());
 			Value = Value;
 			SetValue(GetCurrentWindowMode(), false);
+			#if UNITY_EDITOR
+			// In editor, disable edition since changing window mode can cause focus issues.
+			SetInteractable(false);
+			#endif
 		}
 
 		private static string GetCurrentWindowMode() {
@@ -64,6 +60,7 @@ namespace Nox.Settings.Handlers {
 				return config.Get(GetConfigPath(), Windowed);
 			}
 			set {
+				#if !UNITY_EDITOR
 				switch (value) {
 					case Fullscreen:
 						Screen.fullScreen = true;
@@ -82,11 +79,11 @@ namespace Nox.Settings.Handlers {
 				var config = Config.Load();
 				config.Set(GetConfigPath(), value);
 				config.Save();
+				#endif
 			}
 		}
-
-
-		protected override void OnValueChanged(string value)
+		
+		override protected void OnValueChanged(string value)
 			=> Value = value;
 	}
 }

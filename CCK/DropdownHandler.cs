@@ -9,17 +9,21 @@ namespace Nox.CCK.Settings {
 	public abstract class DropdownHandler : ButtonHandler {
 		private Dictionary<string, string[]> _options = new();
 
-		protected abstract IModalBuilder GetModalBuilder(IMenu menu);
+		private bool menuIsModal;
+
+		abstract protected IModalBuilder GetModalBuilder(IMenu menu);
 
 		public override GameObject GetContent(RectTransform transform, IMenu menu) {
 			var go = base.GetContent(transform, menu);
-			SetInteractable(menu is IModalMenu);
+			menuIsModal = menu is IModalMenu;
+			SetInteractable(_interactable);
 			return go;
 		}
-
+		
 		public override void OnClick(IMenu menu) {
 			var builder = GetModalBuilder(menu);
-			if (builder == null) return;
+			if (builder == null)
+				return;
 			builder.SetTitle($"settings.entry.{string.Join(".", GetPath())}.label");
 			builder.SetClosable(true);
 			builder.SetOptions(e => SetValue(e), _options);
@@ -29,18 +33,28 @@ namespace Nox.CCK.Settings {
 			modal.Show();
 		}
 
-		protected virtual void OnValueChanged(string value) { }
+		virtual protected void OnValueChanged(string value) { }
 
-		protected virtual void SetValue(string value, bool notify = true) {
-			if (_options.Count == 0) return;
-			if (!_options.ContainsKey(value)) return;
+		virtual protected void SetValue(string value, bool notify = true) {
+			if (_options.Count == 0)
+				return;
+			if (!_options.ContainsKey(value))
+				return;
 			Logger.LogDebug($"Setting value to {value}");
 			SetButtonText(_options[value][0], _options[value].Skip(1).ToArray());
-			if (!notify) return;
+			if (!notify)
+				return;
 			OnValueChanged(value);
 		}
 
-		protected virtual void SetOptions(Dictionary<string, string[]> options)
+		virtual protected void SetOptions(Dictionary<string, string[]> options)
 			=> _options = options;
+
+		public override void SetInteractable(bool interactable) {
+			_interactable = interactable;
+			if (!_button)
+				return;
+			_button.interactable = interactable && menuIsModal;
+		}
 	}
 }

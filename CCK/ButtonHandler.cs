@@ -21,16 +21,16 @@ namespace Nox.CCK.Settings {
 		public virtual int CompareTo(IHandler other)
 			=> 0;
 
-		private Button       _button;
+		protected Button       _button;
 		private TextLanguage _textLabel;
 		private string[]     _keyLabel;
 		private string[]     _keyButtonText;
-		private bool         _interactable = true;
+		protected bool         _interactable = true;
 
 
 		private TextLanguage _buttonText;
 
-		protected abstract GameObject GetPrefab();
+		abstract protected GameObject GetPrefab();
 
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
 			var asset = GetPrefab();
