@@ -28,7 +28,7 @@ namespace Nox.CCK.Settings {
 
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
 			var asset = GetPrefab();
-			var go    = Object.Instantiate(asset, transform, false);
+			var go    = asset.Instantiate(transform);
 			_toggle = Reference.GetComponent<Toggle>("toggle", go);
 			_toggle.onValueChanged.AddListener(OnInternalValueChanged);
 			_textLabel = Reference.GetComponent<TextLanguage>("label", go);

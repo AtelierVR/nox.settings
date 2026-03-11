@@ -21,11 +21,11 @@ namespace Nox.CCK.Settings {
 		public virtual int CompareTo(IHandler other)
 			=> 0;
 
-		protected Button       _button;
+		protected Button _button;
 		private TextLanguage _textLabel;
-		private string[]     _keyLabel;
-		private string[]     _keyButtonText;
-		protected bool         _interactable = true;
+		private string[] _keyLabel;
+		private string[] _keyButtonText;
+		protected bool _interactable = true;
 
 
 		private TextLanguage _buttonText;
@@ -34,7 +34,7 @@ namespace Nox.CCK.Settings {
 
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
 			var asset = GetPrefab();
-			var go    = Object.Instantiate(asset, transform, false);
+			var go    = asset.Instantiate(transform);
 			_button     = Reference.GetComponent<Button>("button", go);
 			_textLabel  = Reference.GetComponent<TextLanguage>("label", go);
 			_buttonText = Reference.GetComponent<TextLanguage>("button_text", go);
@@ -44,11 +44,13 @@ namespace Nox.CCK.Settings {
 
 			if (_keyLabel != null)
 				SetLabel(_keyLabel[0], _keyLabel.Skip(1).ToArray());
-			else SetLabel(null);
+			else
+				SetLabel(null);
 
 			if (_keyButtonText != null)
 				SetButtonText(_keyButtonText[0], _keyButtonText.Skip(1).ToArray());
-			else SetButtonText(null);
+			else
+				SetButtonText(null);
 
 			SetInteractable(_interactable);
 			return go;
@@ -77,7 +79,8 @@ namespace Nox.CCK.Settings {
 
 		public virtual void SetInteractable(bool interactable) {
 			_interactable = interactable;
-			if (!_button) return;
+			if (!_button)
+				return;
 			_button.interactable = interactable;
 		}
 	}

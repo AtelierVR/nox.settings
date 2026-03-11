@@ -49,7 +49,7 @@ namespace Nox.CCK.Settings {
 
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
 			var asset = GetPrefab();
-			var go = Object.Instantiate(asset, transform, false);
+			var go = asset.Instantiate(transform);
 			_range = Reference.GetComponent<Slider>("range", go);
 			_textLabel = Reference.GetComponent<TextLanguage>("label", go);
 			_textValue = Reference.GetComponent<TextLanguage>("value", go);
