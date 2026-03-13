@@ -10,7 +10,9 @@ using Nox.Settings.Runtime;
 namespace Nox.Settings.Handlers {
 	public sealed class Quality : DropdownHandler {
 		public override string[] GetPath()
-			=> new[] { "graphic", "quality" };
+			=> new[] { "graphic", "quality", "preset" };
+
+		public override int GetOrder() => 1000;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "quality" };

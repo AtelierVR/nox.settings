@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -19,6 +20,9 @@ namespace Nox.Settings.Clients {
 		public  GameObject              leftContainer;
 
 		public SettingsPage Page;
+
+		private readonly Dictionary<IHandler, GameObject> _handlerBoxes = new();
+		private readonly Dictionary<GameObject, IHandler[]> _groupBoxes  = new();
 
 		public static (GameObject, SettingsComponent) Generate(SettingsPage settingsPage, RectTransform parent) {
 			var iconAsset      = Client.GetAsset<GameObject>("ui:prefabs/header_icon.prefab");
@@ -146,9 +150,28 @@ namespace Nox.Settings.Clients {
 			UpdateLayout.UpdateImmediate(o);
 		}
 
+		private void OnHandlerValueChanged(IHandler _) {
+			foreach (var (h, go) in _handlerBoxes) {
+				if (go)
+					go.SetActive(h.IsActive());
+			}
+			foreach (var (groupBox, handlers) in _groupBoxes) {
+				if (groupBox)
+					groupBox.SetActive(handlers.Any(h => h.IsActive()));
+			}
+			UpdateLayout.UpdateImmediate(content);
+		}
+
+		private void OnDestroy()
+			=> Main.OnHandlerUpdated.RemoveListener(OnHandlerValueChanged);
+
 		internal async UniTask UpdateContent() {
 			var box  = Client.GetAsset<GameObject>("ui:prefabs/box.prefab");
 			var list = Client.GetAsset<GameObject>("ui:prefabs/list.prefab");
+
+			Main.OnHandlerUpdated.RemoveListener(OnHandlerValueChanged);
+			_handlerBoxes.Clear();
+			_groupBoxes.Clear();
 
 			foreach (Transform tf in content)
 				Destroy(tf.gameObject);
@@ -188,14 +211,19 @@ namespace Nox.Settings.Clients {
 					}
 
 					handlerBox.name = $"{handler.GetPath().LastOrDefault()}_{handlerBox.GetInstanceID()}";
-					handlerBox.SetActive(true);
+					_handlerBoxes[handler] = handlerBox;
+					handlerBox.SetActive(handler.IsActive());
 					handlerBox.transform.localPosition = Vector3.zero;
 					handlerBox.transform.localRotation = Quaternion.identity;
 					handlerBox.transform.localScale = Vector3.one;
 				}
+
+				_groupBoxes[groupBox] = group.Handlers;
+				groupBox.SetActive(group.Handlers.Any(h => h.IsActive()));
 			}
 
 			UpdateLayout.UpdateImmediate(content);
+			Main.OnHandlerUpdated.AddListener(OnHandlerValueChanged);
 		}
 
 

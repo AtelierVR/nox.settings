@@ -55,9 +55,35 @@ MonoBehaviour:
       value: "Graphics"
     - key: settings.group.graphic.general.label
       value: "General"
+    - key: settings.group.graphic.display.label
+      value: "Display"
+    - key: settings.group.graphic.quality.label
+      value: "Quality"
+    - key: settings.entry.graphic.quality.label
+      value: "Quality"
+    - key: settings.entry.graphic.quality.preset.label
+      value: "Quality Preset"
+    - key: settings.entry.graphic.quality.bloom_intensity.label
+      value: "Bloom Intensity"
+    - key: settings.entry.graphic.quality.shadow_quality.label
+      value: "Shadow Quality"
+    - key: settings.entry.graphic.quality.pixel_light_count.label
+      value: "Pixel Light Count"
+    - key: settings.entry.graphic.display.resolution.label
+      value: "Resolution"
+    - key: settings.entry.graphic.display.window_size.label
+      value: "Window Mode"
+    - key: settings.entry.performances.lod_bias.label
+      value: "Level of Detail"
+    - key: settings.entry.performances.physics_quality.label
+      value: "Particle Physics Quality"
     - key: settings.entry.graphic.quality.label
       value: "Quality"
     - key: settings.entry.graphic.anti_aliasing.label
+      value: "Anti-Aliasing"
+    - key: settings.entry.graphic.anti_aliasing.mode.label
+      value: "Anti-Aliasing"
+    - key: settings.group.graphic.anti_aliasing.label
       value: "Anti-Aliasing"
     - key: settings.entry.graphic.anti_aliasing.option.none
       value: "No Anti-aliasing"
@@ -81,7 +107,7 @@ MonoBehaviour:
       value: "{0}x{1}"
     - key: settings.entry.graphic.resolution.option.current
       value: "{0}x{1} (Dynamic)"
-    - key: settings.entry.graphic.msaa.label
+    - key: settings.entry.graphic.anti_aliasing.msaa.label
       value: "MSAA"
     - key: settings.entry.graphic.msaa.option.off
       value: "Off"
@@ -115,6 +141,42 @@ MonoBehaviour:
       value: "Performance Settings"
     - key: settings.page.performances.label
       value: "Performance"
+    - key: settings.entry.graphic.shadow_quality.label
+      value: "Shadow Quality"
+    - key: settings.entry.graphic.rendering.shadow_quality.label
+      value: "Shadow Quality"
+    - key: settings.group.graphic.rendering.label
+      value: "Rendering"
+    - key: settings.entry.graphic.shadow_quality.option.low
+      value: "Low"
+    - key: settings.entry.graphic.shadow_quality.option.medium
+      value: "Medium"
+    - key: settings.entry.graphic.shadow_quality.option.high
+      value: "High"
+    - key: settings.entry.graphic.shadow_quality.option.very_high
+      value: "Very High"
+    - key: settings.entry.graphic.lod_bias.label
+      value: "Level of Detail"
+    - key: settings.entry.graphic.rendering.lod_bias.label
+      value: "Level of Detail"
+    - key: settings.entry.graphic.particle_physics_quality.label
+      value: "Particle Physics Quality"
+    - key: settings.entry.graphic.particles.physics_quality.label
+      value: "Particle Physics Quality"
+    - key: settings.group.graphic.particles.label
+      value: "Particles"
+    - key: settings.entry.graphic.pixel_light_count.label
+      value: "Pixel Light Count"
+    - key: settings.entry.graphic.rendering.pixel_light_count.label
+      value: "Pixel Light Count"
+    - key: settings.page.desktop.title
+      value: "Desktop Settings"
+    - key: settings.page.desktop.label
+      value: "Desktop"
+    - key: settings.group.desktop.general.label
+      value: "General"
+    - key: settings.entry.desktop.fov.label
+      value: "Field of View"
   - IETF: fr-FR
     entries:
     - key: settings.page.accessibility.title
@@ -153,9 +215,33 @@ MonoBehaviour:
       value: "Graphismes"
     - key: settings.group.graphic.general.label
       value: "Général"
+    - key: settings.group.graphic.display.label
+      value: "Affichage"
+    - key: settings.group.graphic.quality.label
+      value: "Qualité"
+    - key: settings.entry.graphic.quality.preset.label
+      value: "Préréglage de qualité"
+    - key: settings.entry.graphic.quality.bloom_intensity.label
+      value: "Intensité du bloom"
+    - key: settings.entry.graphic.quality.shadow_quality.label
+      value: "Qualité des ombres"
+    - key: settings.entry.graphic.quality.pixel_light_count.label
+      value: "Nombre de pixels lumineux"
+    - key: settings.entry.graphic.display.resolution.label
+      value: "Résolution"
+    - key: settings.entry.graphic.display.window_size.label
+      value: "Mode d'affichage"
+    - key: settings.entry.performances.lod_bias.label
+      value: "Niveau de détails"
+    - key: settings.entry.performances.physics_quality.label
+      value: "Qualité de la physique des particules"
     - key: settings.entry.graphic.quality.label
       value: "Qualité"
     - key: settings.entry.graphic.anti_aliasing.label
+      value: "Anti-Aliasing"
+    - key: settings.entry.graphic.anti_aliasing.mode.label
+      value: "Anti-Aliasing"
+    - key: settings.group.graphic.anti_aliasing.label
       value: "Anti-Aliasing"
     - key: settings.entry.graphic.resolution.label
       value: "Résolution"
@@ -170,7 +256,9 @@ MonoBehaviour:
     - key: settings.entry.graphic.resolution.option
       value: "{0}x{1}"
     - key: settings.entry.graphic.msaa.label
-      value: "MSSA"
+      value: "MSAA"
+    - key: settings.entry.graphic.anti_aliasing.msaa.label
+      value: "MSAA"
     - key: settings.entry.graphic.msaa.option.off
       value: "Désactivé"
     - key: settings.entry.graphic.msaa.option.x2
@@ -189,3 +277,39 @@ MonoBehaviour:
       value: "Exemple de modal"
     - key: settings.debug.modal.open
       value: "Ouvrir"
+    - key: settings.entry.graphic.shadow_quality.label
+      value: "Qualité des ombres"
+    - key: settings.entry.graphic.rendering.shadow_quality.label
+      value: "Qualité des ombres"
+    - key: settings.group.graphic.rendering.label
+      value: "Rendu"
+    - key: settings.entry.graphic.shadow_quality.option.low
+      value: "Basse"
+    - key: settings.entry.graphic.shadow_quality.option.medium
+      value: "Moyenne"
+    - key: settings.entry.graphic.shadow_quality.option.high
+      value: "Haute"
+    - key: settings.entry.graphic.shadow_quality.option.very_high
+      value: "Très haute"
+    - key: settings.entry.graphic.lod_bias.label
+      value: "Niveau de détails"
+    - key: settings.entry.graphic.rendering.lod_bias.label
+      value: "Niveau de détails"
+    - key: settings.entry.graphic.particle_physics_quality.label
+      value: "Qualité de la physique des particules"
+    - key: settings.entry.graphic.particles.physics_quality.label
+      value: "Qualité de la physique des particules"
+    - key: settings.group.graphic.particles.label
+      value: "Particules"
+    - key: settings.entry.graphic.pixel_light_count.label
+      value: "Nombre de pixels lumineux"
+    - key: settings.entry.graphic.rendering.pixel_light_count.label
+      value: "Nombre de pixels lumineux"
+    - key: settings.page.desktop.title
+      value: "Paramètres bureau"
+    - key: settings.page.desktop.label
+      value: "Bureau"
+    - key: settings.group.desktop.general.label
+      value: "Général"
+    - key: settings.entry.desktop.fov.label
+      value: "Champ de vision"

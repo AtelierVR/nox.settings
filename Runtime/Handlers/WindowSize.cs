@@ -14,7 +14,9 @@ namespace Nox.Settings.Handlers {
 		private const string Windowed   = "windowed";
 
 		public override string[] GetPath()
-			=> new[] { "graphic", "window_size" };
+			=> new[] { "graphic", "display", "window_size" };
+
+		public override int GetOrder() => 1;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "window_mode" };

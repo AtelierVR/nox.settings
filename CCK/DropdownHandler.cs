@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nox.Settings;
 using Nox.UI;
 using Nox.UI.modals;
 using UnityEngine;
@@ -19,8 +20,8 @@ namespace Nox.CCK.Settings {
 			SetInteractable(_interactable);
 			return go;
 		}
-		
-		public override void OnClick(IMenu menu) {
+
+		override protected void OnClick(IMenu menu) {
 			var builder = GetModalBuilder(menu);
 			if (builder == null)
 				return;
@@ -45,12 +46,13 @@ namespace Nox.CCK.Settings {
 			if (!notify)
 				return;
 			OnValueChanged(value);
+			SettingsNotifier.NotifyUpdated(this);
 		}
 
 		virtual protected void SetOptions(Dictionary<string, string[]> options)
 			=> _options = options;
 
-		public override void SetInteractable(bool interactable) {
+		override protected void SetInteractable(bool interactable) {
 			_interactable = interactable;
 			if (!_button)
 				return;

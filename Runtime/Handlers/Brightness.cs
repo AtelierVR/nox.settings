@@ -8,7 +8,7 @@ namespace Nox.Settings.Handlers {
 		public override string[] GetPath()
 			=> new[] { "accessibility", "visual", "brightness" };
 
-		public override GameObject GetPrefab()
+		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/range.prefab");
 
 		public Brightness() {
@@ -38,7 +38,7 @@ namespace Nox.Settings.Handlers {
 			}
 		}
 
-		public override void OnValueChanged(float value) {
+		override protected void OnValueChanged(float value) {
 			Value = value;
 		}
 	}

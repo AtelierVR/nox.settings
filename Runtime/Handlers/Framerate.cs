@@ -35,10 +35,12 @@ namespace Nox.Settings.Handlers {
 		public override string[] GetPath()
 			=> new[] { "performances", "framerate" };
 
+		public override int GetOrder() => 0;
+
 		public static string[] GetConfigPath()
 			=> new[] { "settings", "performances", "framerate" };
 
-		public override GameObject GetPrefab()
+		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/range.prefab");
 
 		public override GameObject GetContent(RectTransform transform, IMenu menu) {
@@ -81,7 +83,7 @@ namespace Nox.Settings.Handlers {
 			}
 		}
 
-		public override void OnValueChanged(float value) {
+		override protected void OnValueChanged(float value) {
 			Value = value;
 			var v = Mathf.RoundToInt(value);
 

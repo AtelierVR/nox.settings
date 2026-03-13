@@ -1,4 +1,5 @@
 using System.Linq;
+using Nox.CCK.Utils;
 using Nox.Settings.Handlers;
 
 namespace Nox.Settings.Runtime {
@@ -9,12 +10,17 @@ namespace Nox.Settings.Runtime {
 				new Brightness(),
 				new BloomIntensity(),
 				new Quality(),
-				new MSSA(),
+				new ShadowQuality(),
+				new LodBias(),
+				new ParticlePhysicsQuality(),
+				new PixelLightCount(),
 				new Resolution(),
 				new WindowSize(),
 				new ModalTesting(),
 				new AntiAliasing(),
-				new Framerate()
+				new MSAA(),
+				new Framerate(),
+				new FieldOfView()
 			};
 
 		public static (string, string, string) Split(this IHandler handler) {
@@ -32,5 +38,13 @@ namespace Nox.Settings.Runtime {
 
 		private static string FormatLanguage(string text)
 			=> text.ToLower().Trim().Replace(" ", "_");
+
+		public static void Listen() {
+			InstantiateHelper.OnInstantiate.AddListener(AntiAliasing.OnInstantiate);
+		}
+
+		public static void Unlisten() {
+			InstantiateHelper.OnInstantiate.RemoveListener(AntiAliasing.OnInstantiate);
+		}
 	}
 }

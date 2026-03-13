@@ -9,6 +9,8 @@ namespace Nox.Settings {
 
 		public bool IsActive();
 
+		public int GetOrder() => 0;
+
 		public GameObject GetContent(RectTransform transform, IMenu menu);
 
 		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu);

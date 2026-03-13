@@ -95,16 +95,15 @@ namespace Nox.Settings.Clients {
 			=> Main.Handlers
 				.Where(h => h.Split().Item1 == category)
 				.GroupBy(h => h.Split().Item2)
-				.Select(
-					g => new GroupDetails {
-						Handlers = g
-							.ToArray()
-							.OrderBy(h => h)
-							.ToArray(),
+				.Select(g => {
+					var ordered = g.ToArray().OrderBy(h => h).ToArray();
+					return new GroupDetails {
+						Handlers = ordered,
 						Category = category,
-						Group    = g.Key
-					}
-				)
+						Group    = g.Key,
+						Order    = ordered.Length > 0 ? ordered[0].GetOrder() : int.MaxValue
+					};
+				})
 				.OrderBy(g => g)
 				.ToArray();
 
@@ -123,15 +122,13 @@ namespace Nox.Settings.Clients {
 		public IHandler[] Handlers = Array.Empty<IHandler>();
 		public string     Category;
 		public string     Group;
+		public int        Order;
 
 		public string GetLabel()
 			=> $"settings.group.{Category}.{Group}.label";
 
-		private string Compare()
-			=> $"{Category}.{Group}";
-
 		public int CompareTo(GroupDetails other)
-			=> string.Compare(Compare(), other.Compare(), StringComparison.Ordinal);
+			=> Order.CompareTo(other.Order);
 	}
 
 	public class CategoryDetails {

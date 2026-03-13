@@ -7,7 +7,6 @@ using Nox.Settings;
 using Nox.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Nox.CCK.Settings {
 	public abstract class RangeHandler : IHandler {
@@ -18,8 +17,10 @@ namespace Nox.CCK.Settings {
 
 		public virtual void OnUpdated(IHandler handler) { }
 
+		public virtual int GetOrder() => 0;
+
 		public virtual int CompareTo(IHandler other)
-			=> 0;
+			=> GetOrder().CompareTo(other.GetOrder());
 
 		private Slider _range;
 		private TextLanguage _textLabel;
@@ -45,11 +46,13 @@ namespace Nox.CCK.Settings {
 		private float Step
 			=> _step > 0 ? _step : float.Epsilon;
 
-		public abstract GameObject GetPrefab();
+		abstract protected GameObject GetPrefab();
 
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
-			var asset = GetPrefab();
-			var go = asset.Instantiate(transform);
+			var asset   = GetPrefab();
+			var go      = asset.Instantiate(transform);
+			var destroy = go.GetOrAddComponent<DestroyComponent>();
+			destroy.Destroyed.AddListener(OnDestroy);
 			_range = Reference.GetComponent<Slider>("range", go);
 			_textLabel = Reference.GetComponent<TextLanguage>("label", go);
 			_textValue = Reference.GetComponent<TextLanguage>("value", go);
@@ -68,28 +71,37 @@ namespace Nox.CCK.Settings {
 			_value = value;
 			UpdateValue();
 			OnValueChanged(Value);
+			SettingsNotifier.NotifyUpdated(this);
 		}
 
-		public void SetLabelKey(string key) {
+		protected void SetLabelKey(string key) {
 			_keyLabel = key;
 			if (_textLabel)
 				_textLabel.UpdateText(key);
 		}
 
-		public void SetTypeKey(string key, params string[] @params) {
+		protected void SetTypeKey(string key, params string[] @params) {
 			_keyType = key;
 			if (_textType)
 				_textType.UpdateText(key, @params);
 		}
 
-		public void SetValueKey(string key) {
+		protected void SetValueKey(string key) {
 			_keyValue = key;
 			if (_textValue)
 				_textValue.UpdateText(key);
 		}
 
+		virtual protected void OnDestroy() {
+			_range.onValueChanged.RemoveListener(OnInternalValueChanged);
+			_range = null;
+			_textLabel = null;
+			_textValue = null;
+			_textType = null;
+		}
 
-		public abstract void OnValueChanged(float value);
+
+		abstract protected void OnValueChanged(float value);
 
 		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu)
 			=> UniTask.FromResult(GetContent(transform, menu));
@@ -116,18 +128,18 @@ namespace Nox.CCK.Settings {
 			);
 		}
 
-		public virtual void SetStep(float step) {
+		virtual protected void SetStep(float step) {
 			_step = step;
 			UpdateSlider();
 		}
 
-		public virtual void SetRange(float min, float max) {
+		virtual protected void SetRange(float min, float max) {
 			_min = min;
 			_max = max;
 			UpdateSlider();
 		}
 
-		public virtual void SetValue(float value, bool notify = true) {
+		virtual protected void SetValue(float value, bool notify = true) {
 			_value = value;
 			UpdateSlider();
 			UpdateValue();

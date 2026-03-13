@@ -11,7 +11,9 @@ using Nox.Settings.Runtime;
 namespace Nox.Settings.Handlers {
 	public sealed class Resolution : DropdownHandler {
 		public override string[] GetPath()
-			=> new[] { "graphic", "resolution" };
+			=> new[] { "graphic", "display", "resolution" };
+
+		public override int GetOrder() => 0;
 
 		public static string[] GetConfigPath(string s)
 			=> new[] { "settings", "graphic", s };

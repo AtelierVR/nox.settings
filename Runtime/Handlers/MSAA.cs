@@ -7,11 +7,14 @@ using Nox.Settings.Runtime;
 using Nox.UI;
 using Nox.UI.modals;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 namespace Nox.Settings.Handlers {
-	public sealed class MSSA : DropdownHandler {
+	public sealed class MSAA : DropdownHandler {
 		public override string[] GetPath()
-			=> new[] { "graphic", "msaa" };
+			=> new[] { "graphic", "anti_aliasing", "msaa" };
+
+		public override int GetOrder() => 2001;
 
 		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/dropdown.prefab");
@@ -22,6 +25,9 @@ namespace Nox.Settings.Handlers {
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "msaa" };
 
+		public override bool IsActive()
+			=> AntiAliasing.Value == AntialiasingMode.SubpixelMorphologicalAntiAliasing;
+
 		private static Dictionary<string, string[]> GetAntiAliasingOptions()
 			=> new() {
 				[0.ToString()] = new[] { "settings.entry.graphic.msaa.option.off" },
@@ -30,7 +36,7 @@ namespace Nox.Settings.Handlers {
 				[3.ToString()] = new[] { "settings.entry.graphic.msaa.option.x8" }
 			};
 
-		public MSSA() {
+		public MSAA() {
 			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
 			SetOptions(GetAntiAliasingOptions());
 			Value = Config.Load().Get(GetConfigPath(), Value);

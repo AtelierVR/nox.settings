@@ -18,8 +18,10 @@ namespace Nox.CCK.Settings {
 
 		public virtual void OnUpdated(IHandler handler) { }
 
+		public virtual int GetOrder() => 0;
+
 		public virtual int CompareTo(IHandler other)
-			=> 0;
+			=> GetOrder().CompareTo(other.GetOrder());
 
 		protected Button _button;
 		private TextLanguage _textLabel;
@@ -35,6 +37,8 @@ namespace Nox.CCK.Settings {
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
 			var asset = GetPrefab();
 			var go    = asset.Instantiate(transform);
+			var destroy = go.GetOrAddComponent<DestroyComponent>();
+			destroy.Destroyed.AddListener(OnDestroy);
 			_button     = Reference.GetComponent<Button>("button", go);
 			_textLabel  = Reference.GetComponent<TextLanguage>("label", go);
 			_buttonText = Reference.GetComponent<TextLanguage>("button_text", go);
@@ -56,7 +60,7 @@ namespace Nox.CCK.Settings {
 			return go;
 		}
 
-		public void SetLabel(string key, params string[] @params) {
+		protected void SetLabel(string key, params string[] @params) {
 			key       ??= "label.default";
 			@params   ??= Array.Empty<string>();
 			_keyLabel =   new[] { key }.Concat(@params).ToArray();
@@ -64,7 +68,7 @@ namespace Nox.CCK.Settings {
 				_textLabel.UpdateText(key);
 		}
 
-		public void SetButtonText(string key, params string[] @params) {
+		protected void SetButtonText(string key, params string[] @params) {
 			key            ??= "button.default";
 			@params        ??= Array.Empty<string>();
 			_keyButtonText =   new[] { key }.Concat(@params).ToArray();
@@ -72,12 +76,18 @@ namespace Nox.CCK.Settings {
 				_buttonText.UpdateText(key, @params);
 		}
 
-		public abstract void OnClick(IMenu menu);
+		abstract protected void OnClick(IMenu menu);
+
+		virtual protected void OnDestroy() {
+			if (_button)
+				_button.onClick.RemoveAllListeners();
+			_button = null;
+		}
 
 		public virtual UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu)
 			=> UniTask.FromResult(GetContent(transform, menu));
 
-		public virtual void SetInteractable(bool interactable) {
+		virtual protected void SetInteractable(bool interactable) {
 			_interactable = interactable;
 			if (!_button)
 				return;

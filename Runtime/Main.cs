@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nox.CCK.Language;
 using Nox.CCK.Mods.Cores;
+using Nox.CCK.Mods.Events;
 using Nox.CCK.Mods.Initializers;
 using Nox.Controllers;
 using Nox.Settings;
@@ -10,7 +11,7 @@ using UnityEngine.Events;
 
 namespace Nox.Settings.Runtime {
 	public class Main : IMainModInitializer, ISettingAPI {
-		internal static readonly List<IHandler> Handlers = new();
+		static readonly internal List<IHandler> Handlers = new();
 		public static            Main           Instance;
 		public                   IMainModCoreAPI CoreAPI;
 		private                  LanguagePack   _lang;
@@ -20,8 +21,9 @@ namespace Nox.Settings.Runtime {
 				.GetMod("controller")
 				.GetInstance<IControllerAPI>();
 
-		internal static readonly UnityEvent<IHandler> OnHandlerAdded   = new();
-		internal static readonly UnityEvent<IHandler> OnHandlerRemoved = new();
+		static readonly internal UnityEvent<IHandler> OnHandlerAdded   = new();
+		static readonly internal UnityEvent<IHandler> OnHandlerRemoved = new();
+		static readonly internal UnityEvent<IHandler> OnHandlerUpdated = new();
 
 		private void InvokeHandlerAdded(IHandler handler) {
 			OnHandlerAdded.Invoke(handler);
@@ -75,19 +77,37 @@ namespace Nox.Settings.Runtime {
 		public bool Has(string[] path)
 			=> Handlers.Exists(b => b.GetPath().SequenceEqual(path));
 
-		private IHandler[] _handlers = Array.Empty<IHandler>();
+		private IHandler[]        _handlers               = Array.Empty<IHandler>();
+		private EventSubscription _controllerChangedSub;
+
+		private static void OnControllerChangedEvent(EventData _)
+			=> PropagateHandlerUpdated(null);
+
+		private static void PropagateHandlerUpdated(IHandler changedHandler) {
+			foreach (var h in Handlers)
+				h.OnUpdated(changedHandler);
+			OnHandlerUpdated.Invoke(changedHandler);
+		}
 
 		public void OnInitializeMain(IMainModCoreAPI api) {
 			Instance = this;
 			CoreAPI  = api;
+			SettingsNotifier.OnHandlerUpdated += PropagateHandlerUpdated;
+			_controllerChangedSub = CoreAPI.EventAPI.Subscribe("controller_changed", OnControllerChangedEvent);
 			_lang    = CoreAPI.AssetAPI.GetAsset<LanguagePack>("lang.asset");
 			LanguageManager.AddPack(_lang);
 			_handlers = DefaultSettings.GetHandlers();
 			foreach (var handler in _handlers)
 				Add(handler);
+			DefaultSettings.Listen();
 		}
 
 		public void OnDisposeMain() {
+			DefaultSettings.Unlisten();
+			if (_controllerChangedSub != null)
+				CoreAPI.EventAPI.Unsubscribe(_controllerChangedSub);
+			_controllerChangedSub = null;
+			SettingsNotifier.OnHandlerUpdated -= PropagateHandlerUpdated;
 			foreach (var handler in Handlers.ToArray())
 				Remove(handler.GetPath());
 			Handlers.Clear();

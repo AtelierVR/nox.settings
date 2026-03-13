@@ -6,7 +6,9 @@ using Nox.Settings.Runtime;
 namespace Nox.Settings.Handlers {
 	public sealed class BloomIntensity : RangeHandler {
 		public override string[] GetPath()
-			=> new[] { "accessibility", "visual", "bloom_intensity" };
+			=> new[] { "graphic", "quality", "bloom_intensity" };
+
+		public override int GetOrder() => 1003;
 
 		public BloomIntensity() {
 			SetRange(0f, 1f);
@@ -35,10 +37,10 @@ namespace Nox.Settings.Handlers {
 			}
 		}
 
-		public override GameObject GetPrefab()
+		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/range.prefab");
 
-		public override void OnValueChanged(float value) {
+		override protected void OnValueChanged(float value) {
 			Value = value;
 		}
 	}
