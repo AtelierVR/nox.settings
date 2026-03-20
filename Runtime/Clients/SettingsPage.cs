@@ -35,7 +35,7 @@ namespace Nox.Settings.Clients {
 
 		internal static IPage OnGotoAction(IMenu menu, object[] context)
 			=> new SettingsPage {
-				MId      = menu.GetId(),
+				MId      = menu.Id,
 				_context = context,
 				_current = T(context, 0, out string[] path) ? path : Array.Empty<string>()
 			};
