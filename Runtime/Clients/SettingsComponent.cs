@@ -36,7 +36,7 @@ namespace Nox.Settings.Clients {
 
 			var component = content.AddComponent<SettingsComponent>();
 			component.Page = settingsPage;
-			content.name   = $"[{settingsPage.GetKey()}_{content.GetInstanceID()}]";
+			content.name   = $"[{settingsPage.GetKey()}_{content.GetEntityId().GetHashCode()}]";
 
 			var splitContent = Reference.GetComponent<RectTransform>("content", content);
 
@@ -125,7 +125,7 @@ namespace Nox.Settings.Clients {
 				var button = o.GetComponent<Button>();
 				button.onClick.AddListener(() => OnChangePage(p.GetId()));
 
-				o.name = $"{p.GetId()}_{o.GetInstanceID()}";
+				o.name = $"{p.GetId()}_{o.GetEntityId().GetHashCode()}";
 				o.SetActive(true);
 			}
 
@@ -210,7 +210,7 @@ namespace Nox.Settings.Clients {
 						continue;
 					}
 
-					handlerBox.name = $"{handler.GetPath().LastOrDefault()}_{handlerBox.GetInstanceID()}";
+					handlerBox.name = $"{handler.GetPath().LastOrDefault()}_{handlerBox.GetEntityId().GetHashCode()}";
 					_handlerBoxes[handler] = handlerBox;
 					handlerBox.SetActive(handler.IsActive());
 					handlerBox.transform.localPosition = Vector3.zero;
