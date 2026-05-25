@@ -1,5 +1,6 @@
-{
-  "name": "nox.settings",
-  "displayName": "Nox - Settings",
-  "version": "1.0.0"
+﻿{
+    "name":  "nox.settings",
+    "displayName":  "Nox - Settings",
+    "version":  "1.0.0",
+    "description":  "Persistent settings storage and configuration management for Nox and its mods."
 }
