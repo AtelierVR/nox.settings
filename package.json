@@ -2,5 +2,8 @@
     "name":  "nox.settings",
     "displayName":  "Nox - Settings",
     "version":  "1.0.0",
-    "description":  "Persistent settings storage and configuration management for Nox and its mods."
+    "description":  "Persistent settings storage and configuration management for Nox and its mods.",
+    "dependencies": {
+        "com.unity.render-pipelines.universal": "17.0.0"
+    }
 }

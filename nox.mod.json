@@ -28,12 +28,20 @@
     {
       "id": "ui",
       "type": "depends",
-      "version": ">=1.0.0"
+      "version": ">=1.0.0",
+      "register": "git+https://github.com/AtelierVR/nox.ui.git"
     },
     {
       "id": "controller",
       "type": "recommends",
-      "version": ">=1.0.0"
+      "version": ">=1.0.0",
+      "register": "git+https://github.com/AtelierVR/nox.controllers.git"
+    },
+    {
+      "id": "com.unity.render-pipelines.universal",
+      "type": "depends",
+      "version": ">=17.0.0",
+      "register": "upm+com.unity.render-pipelines.universal@17.0.0"
     }
   ],
   "constraints": [
