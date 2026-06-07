@@ -41,7 +41,7 @@
       "id": "com.unity.render-pipelines.universal",
       "type": "depends",
       "version": ">=17.0.0",
-      "register": "upm+com.unity.render-pipelines.universal@17.0.0"
+      "register": "upm+com.unity.render-pipelines.universal@17.5.0"
     }
   ],
   "constraints": [

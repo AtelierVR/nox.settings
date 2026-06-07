@@ -4,6 +4,6 @@
     "version":  "1.0.0",
     "description":  "Persistent settings storage and configuration management for Nox and its mods.",
     "dependencies": {
-        "com.unity.render-pipelines.universal": "17.0.0"
+        "com.unity.render-pipelines.universal": "17.5.0"
     }
 }
