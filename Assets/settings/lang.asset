@@ -177,6 +177,38 @@ MonoBehaviour:
       value: "General"
     - key: settings.entry.desktop.fov.label
       value: "Field of View"
+    - key: terminal.command.settings.short
+      value: Manage game settings
+    - key: terminal.command.settings.description
+      value: Manage game settings from the terminal. Use list to see all settings, get to view a setting value, or set to change a setting.
+    - key: terminal.command.settings.usage
+      value: "Usage: settings <list|get|set|trigger> [path] [value]"
+    - key: terminal.command.settings.invalid_subcommand
+      value: "Invalid subcommand '{0}'. Use: list, get, set, or trigger."
+    - key: terminal.command.settings.list.empty
+      value: No settings available.
+    - key: terminal.command.settings.list.header
+      value: "{0} settings:"
+    - key: terminal.command.settings.get.usage
+      value: "Usage: settings get <path>"
+    - key: terminal.command.settings.get.not_found
+      value: "Setting '{0}' not found."
+    - key: terminal.command.settings.set.usage
+      value: "Usage: settings set <path> <value>"
+    - key: terminal.command.settings.set.not_found
+      value: "Setting '{0}' not found."
+    - key: terminal.command.settings.set.success
+      value: "Setting '{0}' set to '{1}'."
+    - key: terminal.command.settings.set.error
+      value: "Error setting value: {0}"
+    - key: terminal.command.settings.trigger.usage
+      value: "Usage: settings trigger <path>"
+    - key: terminal.command.settings.trigger.not_found
+      value: "Setting '{0}' not found."
+    - key: terminal.command.settings.trigger.not_triggerable
+      value: "Setting '{0}' is not triggerable."
+    - key: terminal.command.settings.trigger.success
+      value: "Setting '{0}' triggered."
   - IETF: fr-FR
     entries:
     - key: settings.page.accessibility.title
@@ -313,3 +345,35 @@ MonoBehaviour:
       value: "Général"
     - key: settings.entry.desktop.fov.label
       value: "Champ de vision"
+    - key: terminal.command.settings.short
+      value: Gérer les paramètres du jeu
+    - key: terminal.command.settings.description
+      value: Gère les paramètres du jeu depuis le terminal. Utilisez list pour voir tous les paramètres, get pour voir une valeur, ou set pour modifier un paramètre.
+    - key: terminal.command.settings.usage
+      value: "Usage : settings <list|get|set|trigger> [chemin] [valeur]"
+    - key: terminal.command.settings.invalid_subcommand
+      value: "Sous-commande invalide '{0}'. Utilisez : list, get, set ou trigger."
+    - key: terminal.command.settings.list.empty
+      value: Aucun paramètre disponible.
+    - key: terminal.command.settings.list.header
+      value: "{0} paramètres :"
+    - key: terminal.command.settings.get.usage
+      value: "Usage : settings get <chemin>"
+    - key: terminal.command.settings.get.not_found
+      value: "Paramètre '{0}' introuvable."
+    - key: terminal.command.settings.set.usage
+      value: "Usage : settings set <chemin> <valeur>"
+    - key: terminal.command.settings.set.not_found
+      value: "Paramètre '{0}' introuvable."
+    - key: terminal.command.settings.set.success
+      value: "Paramètre '{0}' défini sur '{1}'."
+    - key: terminal.command.settings.set.error
+      value: "Erreur lors de la définition : {0}"
+    - key: terminal.command.settings.trigger.usage
+      value: "Usage : settings trigger <chemin>"
+    - key: terminal.command.settings.trigger.not_found
+      value: "Paramètre '{0}' introuvable."
+    - key: terminal.command.settings.trigger.not_triggerable
+      value: "Le paramètre '{0}' n'est pas déclenchable."
+    - key: terminal.command.settings.trigger.success
+      value: "Paramètre '{0}' déclenché."

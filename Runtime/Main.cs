@@ -7,6 +7,8 @@ using Nox.CCK.Mods.Events;
 using Nox.CCK.Mods.Initializers;
 using Nox.Controllers;
 using Nox.Settings;
+using Nox.Settings.Commands;
+using Nox.Terminal;
 using UnityEngine.Events;
 
 namespace Nox.Settings.Runtime {
@@ -79,6 +81,7 @@ namespace Nox.Settings.Runtime {
 
 		private IHandler[]        _handlers               = Array.Empty<IHandler>();
 		private EventSubscription _controllerChangedSub;
+		private uint              _settingsCommandId;
 
 		private static void OnControllerChangedEvent(EventData _)
 			=> PropagateHandlerUpdated(null);
@@ -100,6 +103,13 @@ namespace Nox.Settings.Runtime {
 			foreach (var handler in _handlers)
 				Add(handler);
 			DefaultSettings.Listen();
+
+			// Register terminal command
+			var terminalMod = CoreAPI.ModAPI.GetMod("terminal");
+			if (terminalMod != null) {
+				var terminalAPI = terminalMod.GetInstance<ITerminalAPI>();
+				_settingsCommandId = terminalAPI.Register(new SettingsCommand());
+			}
 		}
 
 		public void OnDisposeMain() {
@@ -112,6 +122,13 @@ namespace Nox.Settings.Runtime {
 				Remove(handler.GetPath());
 			Handlers.Clear();
 			_handlers = Array.Empty<IHandler>();
+			// Unregister terminal command
+			if (_settingsCommandId != 0) {
+				var terminalMod = CoreAPI.ModAPI.GetMod("terminal");
+				terminalMod?.GetInstance<ITerminalAPI>()?.Unregister(_settingsCommandId);
+				_settingsCommandId = 0;
+			}
+
 			LanguageManager.RemovePack(_lang);
 			_lang    = null;
 			Instance = null;

@@ -40,8 +40,10 @@ namespace Nox.CCK.Settings {
 		private float Max
 			=> Mathf.Floor(_max / Step) * Step;
 
-		private float Value
+		public float Value
 			=> Mathf.Round(Mathf.Clamp(_value, Min, Max) / Step) * Step;
+
+		object IHandler.Value => Value;
 
 		private float Step
 			=> _step > 0 ? _step : float.Epsilon;

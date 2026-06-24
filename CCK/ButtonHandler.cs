@@ -13,6 +13,12 @@ namespace Nox.CCK.Settings {
 	public abstract class ButtonHandler : IHandler {
 		public abstract string[] GetPath();
 
+		public virtual object Value => null;
+
+		public virtual bool IsTriggerable => true;
+
+		public abstract void OnClick(IContext context);
+
 		public virtual bool IsActive()
 			=> true;
 
@@ -44,7 +50,7 @@ namespace Nox.CCK.Settings {
 			_buttonText = Reference.GetComponent<TextLanguage>("button_text", go);
 
 			if (_button)
-				_button.onClick.AddListener(() => OnClick(menu));
+				_button.onClick.AddListener(() => OnClick(new Context().Set("menu", menu)));
 
 			if (_keyLabel != null)
 				SetLabel(_keyLabel[0], _keyLabel.Skip(1).ToArray());
@@ -75,8 +81,6 @@ namespace Nox.CCK.Settings {
 			if (_buttonText)
 				_buttonText.UpdateText(key, @params);
 		}
-
-		abstract protected void OnClick(IMenu menu);
 
 		virtual protected void OnDestroy() {
 			if (_button)

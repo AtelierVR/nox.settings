@@ -9,8 +9,13 @@ using Logger = Nox.CCK.Utils.Logger;
 namespace Nox.CCK.Settings {
 	public abstract class DropdownHandler : ButtonHandler {
 		private Dictionary<string, string[]> _options = new();
+		private string _selectedKey;
 
 		private bool menuIsModal;
+
+		public override object Value => _selectedKey;
+
+		public override bool IsTriggerable => false;
 
 		abstract protected IModalBuilder GetModalBuilder(IMenu menu);
 
@@ -21,7 +26,9 @@ namespace Nox.CCK.Settings {
 			return go;
 		}
 
-		override protected void OnClick(IMenu menu) {
+		public override void OnClick(IContext context) {
+			if (!context.Has("menu")) return;
+			var menu = context.Get<IMenu>("menu");
 			var builder = GetModalBuilder(menu);
 			if (builder == null)
 				return;
@@ -41,6 +48,7 @@ namespace Nox.CCK.Settings {
 				return;
 			if (!_options.ContainsKey(value))
 				return;
+			_selectedKey = value;
 			Logger.LogDebug($"Setting value to {value}");
 			SetButtonText(_options[value][0], _options[value].Skip(1).ToArray());
 			if (!notify)

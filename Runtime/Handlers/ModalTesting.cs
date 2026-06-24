@@ -25,7 +25,9 @@ namespace Nox.Settings.Handlers {
 			SetButtonText("settings.debug.modal.open");
 		}
 
-		override protected void OnClick(IMenu menu) {
+		public override void OnClick(IContext context) {
+			if (!context.Has("menu")) return;
+			var menu = context.Get<IMenu>("menu");
 			var builder = Client.UiAPI.MakeModal(menu);
 			if (builder == null) return;
 			builder.SetTitle("value", "Test Modal");

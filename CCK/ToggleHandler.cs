@@ -5,7 +5,6 @@ using Nox.Settings;
 using Nox.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Nox.CCK.Settings {
 	public abstract class ToggleHandler : IHandler {
@@ -25,6 +24,9 @@ namespace Nox.CCK.Settings {
 		private TextLanguage _textLabel;
 		private bool _value;
 		private string _keyLabel;
+
+		public bool Value => _value;
+		object IHandler.Value => Value;
 
 		abstract protected GameObject GetPrefab();
 
