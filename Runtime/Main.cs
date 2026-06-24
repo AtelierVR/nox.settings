@@ -20,7 +20,7 @@ namespace Nox.Settings.Runtime {
 
 		public static IControllerAPI ControllerAPI
 			=> Instance.CoreAPI.ModAPI
-				.GetMod("controller")
+				.GetMod("controllers")
 				.GetInstance<IControllerAPI>();
 
 		static readonly internal UnityEvent<IHandler> OnHandlerAdded   = new();

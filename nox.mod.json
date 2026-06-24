@@ -31,7 +31,7 @@
       "register": "git+https://github.com/AtelierVR/nox.ui.git"
     },
     {
-      "id": "controller",
+      "id": "controllers",
       "type": "recommends",
       "version": ">=1.0.0",
       "register": "git+https://github.com/AtelierVR/nox.controllers.git"
