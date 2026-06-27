@@ -17,7 +17,8 @@ namespace Nox.CCK.Settings {
 
 		public virtual void OnUpdated(IHandler handler) { }
 
-		public virtual int GetOrder() => 0;
+		public virtual int GetOrder()
+			=> 0;
 
 		public virtual int CompareTo(IHandler other)
 			=> GetOrder().CompareTo(other.GetOrder());
@@ -43,7 +44,8 @@ namespace Nox.CCK.Settings {
 		public float Value
 			=> Mathf.Round(Mathf.Clamp(_value, Min, Max) / Step) * Step;
 
-		object IHandler.Value => Value;
+		object IHandler.Value
+			=> Value;
 
 		private float Step
 			=> _step > 0 ? _step : float.Epsilon;
@@ -55,10 +57,10 @@ namespace Nox.CCK.Settings {
 			var go      = asset.Instantiate(transform);
 			var destroy = go.GetOrAddComponent<DestroyComponent>();
 			destroy.Destroyed.AddListener(OnDestroy);
-			_range = Reference.GetComponent<Slider>("range", go);
+			_range     = Reference.GetComponent<Slider>("range", go);
 			_textLabel = Reference.GetComponent<TextLanguage>("label", go);
 			_textValue = Reference.GetComponent<TextLanguage>("value", go);
-			_textType = Reference.GetComponent<TextLanguage>("type", go);
+			_textType  = Reference.GetComponent<TextLanguage>("type", go);
 			UpdateSlider();
 			UpdateValue();
 			SetLabelKey(_keyLabel);
@@ -69,7 +71,8 @@ namespace Nox.CCK.Settings {
 		}
 
 		private void OnInternalValueChanged(float value) {
-			if (Mathf.Approximately(_value, value)) return;
+			if (Mathf.Approximately(_value, value))
+				return;
 			_value = value;
 			UpdateValue();
 			OnValueChanged(Value);
@@ -96,10 +99,10 @@ namespace Nox.CCK.Settings {
 
 		virtual protected void OnDestroy() {
 			_range.onValueChanged.RemoveListener(OnInternalValueChanged);
-			_range = null;
+			_range     = null;
 			_textLabel = null;
 			_textValue = null;
-			_textType = null;
+			_textType  = null;
 		}
 
 
@@ -109,15 +112,17 @@ namespace Nox.CCK.Settings {
 			=> UniTask.FromResult(GetContent(transform, menu));
 
 		private void UpdateSlider() {
-			if (!_range) return;
-			_range.minValue = Min;
-			_range.maxValue = Max;
+			if (!_range)
+				return;
+			_range.minValue     = Min;
+			_range.maxValue     = Max;
 			_range.wholeNumbers = _step % 1 == 0;
 			_range.SetValueWithoutNotify(Value);
 		}
 
 		private void UpdateValue() {
-			if (!_textValue) return;
+			if (!_textValue)
+				return;
 			_textValue.UpdateText(
 				new[] {
 					Value.ToString("0"),
