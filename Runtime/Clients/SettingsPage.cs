@@ -143,8 +143,8 @@ namespace Nox.Settings.Clients {
 		public string GetTitle()
 			=> $"settings.page.{_id}.title";
 
-		public async UniTask<Texture2D> GetIcon()
-			=> await Client.GetAssetAsync<Texture2D>($"icons/{_id}.png");
+		public async UniTask<Sprite> GetIcon()
+			=> await Client.GetAssetAsync<Sprite>($"icons/{_id}.png");
 
 		public string GetLabel()
 			=> $"settings.page.{_id}.label";

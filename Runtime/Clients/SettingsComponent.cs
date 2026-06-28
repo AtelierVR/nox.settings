@@ -92,17 +92,12 @@ namespace Nox.Settings.Clients {
 		public async UniTask UpdateIcon() {
 			var settings = Page.GetCategory();
 
-			var texture = settings != null
+			var sprite = settings != null
 				? await settings.GetIcon()
-				: await Client.GetAssetAsync<Texture2D>("ui:icons/settings.png");
-
-			labelIcon.sprite = texture
-				? Sprite.Create(
-					texture,
-					new Rect(0, 0, texture.width, texture.height),
-					new Vector2(0.5f, 0.5f)
-				)
 				: null;
+
+			labelIcon.sprite = sprite 
+				?? await Client.GetAssetAsync<Sprite>("ui:icons/settings.png");
 		}
 
 		public async UniTask UpdateNavigation() {
@@ -139,11 +134,7 @@ namespace Nox.Settings.Clients {
 				imageContainer.gameObject.SetActive(false);
 			var icon = await category.GetIcon();
 			if (icon) {
-				image.sprite = Sprite.Create(
-					icon,
-					new Rect(0, 0, icon.width, icon.height),
-					new Vector2(0.5f, 0.5f)
-				);
+				image.sprite = icon;
 				imageContainer.gameObject.SetActive(true);
 			} else imageContainer.gameObject.SetActive(false);
 
