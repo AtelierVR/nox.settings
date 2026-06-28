@@ -48,7 +48,12 @@
       "version": ">=1.0.0"
     }
   ],
-  "constraints": [],
+  "constraints": [
+    {
+      "type": "after",
+      "id":"terminal"
+    }
+  ],
   "entrypoints": {
     "main": [
       "Nox.Settings.Runtime.Main"

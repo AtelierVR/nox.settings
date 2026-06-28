@@ -79,6 +79,11 @@ namespace Nox.Settings.Runtime {
 		public bool Has(string[] path)
 			=> Handlers.Exists(b => b.GetPath().SequenceEqual(path));
 
+		internal static ITerminalAPI TerminalAPI
+			=> Instance.CoreAPI.ModAPI
+				.GetMod("terminal")
+				.GetInstance<ITerminalAPI>();
+
 		private IHandler[]        _handlers               = Array.Empty<IHandler>();
 		private EventSubscription _controllerChangedSub;
 		private uint              _settingsCommandId;
@@ -105,11 +110,7 @@ namespace Nox.Settings.Runtime {
 			DefaultSettings.Listen();
 
 			// Register terminal command
-			var terminalMod = CoreAPI.ModAPI.GetMod("terminal");
-			if (terminalMod != null) {
-				var terminalAPI = terminalMod.GetInstance<ITerminalAPI>();
-				_settingsCommandId = terminalAPI.Register(new SettingsCommand());
-			}
+			_settingsCommandId = TerminalAPI.Register(new SettingsCommand());
 		}
 
 		public void OnDisposeMain() {
@@ -123,11 +124,8 @@ namespace Nox.Settings.Runtime {
 			Handlers.Clear();
 			_handlers = Array.Empty<IHandler>();
 			// Unregister terminal command
-			if (_settingsCommandId != 0) {
-				var terminalMod = CoreAPI.ModAPI.GetMod("terminal");
-				terminalMod?.GetInstance<ITerminalAPI>()?.Unregister(_settingsCommandId);
-				_settingsCommandId = 0;
-			}
+			TerminalAPI.Unregister(_settingsCommandId);
+			_settingsCommandId = 0;
 
 			LanguageManager.RemovePack(_lang);
 			_lang    = null;
