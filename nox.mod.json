@@ -45,7 +45,8 @@
     {
       "id": "terminal",
       "type": "depends",
-      "version": ">=1.0.0"
+      "version": ">=1.0.0",
+      "register": "git+https://github.com/AtelierVR/nox.terminal.git"
     }
   ],
   "constraints": [
