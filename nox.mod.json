@@ -6,7 +6,7 @@
     "settings"
   ],
   "name": "Settings",
-  "version": "1.0.0",
+  "version": "1.0.x",
   "description": "Provides the Settings for the game.",
   "license": "GPL-3.0",
   "icon": null,
