@@ -176,7 +176,7 @@ namespace Nox.Settings.Clients {
 			var groups = Page.GetGroups(details.GetId());
 
 			foreach (var group in groups) {
-				var groupBox = (await InstantiateAsync(box, content)).FirstOrDefault();
+						var groupBox = await box.InstantiateAsync(content);
 				if (!groupBox) continue;
 				groupBox.transform.localPosition = Vector3.zero;
 				groupBox.transform.localRotation = Quaternion.identity;
@@ -185,7 +185,7 @@ namespace Nox.Settings.Clients {
 				var cont = Reference.GetComponent<RectTransform>("content", groupBox);
 				var text = Reference.GetComponent<TextLanguage>("text", groupBox);
 				text.UpdateText(group.GetLabel());
-				var listBox = (await InstantiateAsync(list, cont)).FirstOrDefault();
+						var listBox = await list.InstantiateAsync(cont);
 				if (!listBox) continue;
 				listBox.transform.localPosition = Vector3.zero;
 				listBox.transform.localRotation = Quaternion.identity;
