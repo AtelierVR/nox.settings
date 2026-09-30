@@ -15,7 +15,7 @@ namespace Nox.Settings.Clients {
 		public  RectTransform           content;
 		public  GameObject              header;
 		public  TextLanguage            title;
-		private CancellationTokenSource _thumbnailTokenSource;
+		private CancellationTokenSource _token;
 		public  RectTransform           navigation;
 		public  GameObject              leftContainer;
 
@@ -153,10 +153,21 @@ namespace Nox.Settings.Clients {
 			UpdateLayout.UpdateImmediate(content);
 		}
 
-		private void OnDestroy()
-			=> Main.OnHandlerUpdated.RemoveListener(OnHandlerValueChanged);
+		private void OnDestroy() {
+			Main.OnHandlerUpdated.RemoveListener(OnHandlerValueChanged);
+			_token?.Cancel();
+			_token?.Dispose();
+			_token = null;
+		}
 
 		internal async UniTask UpdateContent() {
+			_token?.Cancel();
+			_token?.Dispose();
+			_token = new CancellationTokenSource();
+			var token = _token.Token;
+
+			if (!content) return;
+
 			var box  = Client.GetAsset<GameObject>("ui:prefabs/box.prefab");
 			var list = Client.GetAsset<GameObject>("ui:prefabs/list.prefab");
 
@@ -176,26 +187,31 @@ namespace Nox.Settings.Clients {
 			var groups = Page.GetGroups(details.GetId());
 
 			foreach (var group in groups) {
-						var groupBox = await box.InstantiateAsync(content);
+				token.ThrowIfCancellationRequested();
+
+				var groupBox = await box.InstantiateAsync(content, cancellationToken: token);
 				if (!groupBox) continue;
 				groupBox.transform.localPosition = Vector3.zero;
 				groupBox.transform.localRotation = Quaternion.identity;
 				groupBox.transform.localScale = Vector3.one;
-				
+
 				var cont = Reference.GetComponent<RectTransform>("content", groupBox);
 				var text = Reference.GetComponent<TextLanguage>("text", groupBox);
 				text.UpdateText(group.GetLabel());
-						var listBox = await list.InstantiateAsync(cont);
+				var listBox = await list.InstantiateAsync(cont, cancellationToken: token);
 				if (!listBox) continue;
 				listBox.transform.localPosition = Vector3.zero;
 				listBox.transform.localRotation = Quaternion.identity;
 				listBox.transform.localScale = Vector3.one;
-				
+
 				cont = Reference.GetComponent<RectTransform>("content", listBox);
 				var menu = Page.GetMenu();
 				foreach (var handler in group.Handlers) {
-					var handlerBox = await handler.GetContentAsync(cont, menu) 
+					token.ThrowIfCancellationRequested();
+
+					var handlerBox = await handler.GetContentAsync(cont, menu)
 						?? handler.GetContent(cont, menu);
+					token.ThrowIfCancellationRequested();
 					if (!handlerBox) {
 						Debug.LogWarning($"Handler {handler.ToID()} does not have content.");
 						continue;
@@ -209,10 +225,12 @@ namespace Nox.Settings.Clients {
 					handlerBox.transform.localScale = Vector3.one;
 				}
 
+				token.ThrowIfCancellationRequested();
 				_groupBoxes[groupBox] = group.Handlers;
 				groupBox.SetActive(group.Handlers.Any(h => h.IsActive()));
 			}
 
+			token.ThrowIfCancellationRequested();
 			UpdateLayout.UpdateImmediate(content);
 			Main.OnHandlerUpdated.AddListener(OnHandlerValueChanged);
 		}
