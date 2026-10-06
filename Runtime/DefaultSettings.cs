@@ -12,6 +12,7 @@ namespace Nox.Settings.Runtime {
 				new Quality(),
 				new ShadowQuality(),
 				new LodBias(),
+				new SkinWeights(),
 				new ParticlePhysicsQuality(),
 				new PixelLightCount(),
 				new Resolution(),

@@ -37,8 +37,16 @@ MonoBehaviour:
       value: "{5}"
     - key: settings.range.value.meters
       value: "{0} m"
+    - key: settings.range.value.float_meters
+      value: "{1} m"
+    - key: settings.range.value.centimeters
+      value: "{2} cm"
+    - key: settings.range.value.float_centimeters
+      value: "{3} cm"
     - key: settings.range.value.seconds
       value: "{0} s"
+    - key: settings.range.value.float_seconds
+      value: "{1} s"
     - key: settings.entry.accessibility.interface.language.label
       value: "Language"
     - key: settings.entry.accessibility.visual.brightness.label
@@ -77,6 +85,16 @@ MonoBehaviour:
       value: "Level of Detail"
     - key: settings.entry.performances.physics_quality.label
       value: "Particle Physics Quality"
+    - key: settings.entry.performances.skin_weights.label
+      value: "Skin Weights"
+    - key: settings.entry.performances.skin_weights.option.one_bone
+      value: "1 Bone"
+    - key: settings.entry.performances.skin_weights.option.two_bones
+      value: "2 Bones"
+    - key: settings.entry.performances.skin_weights.option.four_bones
+      value: "4 Bones"
+    - key: settings.entry.performances.skin_weights.option.unlimited
+      value: "Unlimited"
     - key: settings.entry.graphic.quality.label
       value: "Quality"
     - key: settings.entry.graphic.anti_aliasing.label
@@ -231,6 +249,18 @@ MonoBehaviour:
       value: "{4}"
     - key: settings.range.value.hexadecimal
       value: "{5}"
+    - key: settings.range.value.meters
+      value: "{0} m"
+    - key: settings.range.value.float_meters
+      value: "{1} m"
+    - key: settings.range.value.centimeters
+      value: "{2} cm"
+    - key: settings.range.value.float_centimeters
+      value: "{3} cm"
+    - key: settings.range.value.seconds
+      value: "{0} s"
+    - key: settings.range.value.float_seconds
+      value: "{1} s"
     - key: settings.entry.accessibility.interface.language.label
       value: "Langue"
     - key: settings.entry.accessibility.visual.brightness.label
@@ -267,6 +297,16 @@ MonoBehaviour:
       value: "Niveau de détails"
     - key: settings.entry.performances.physics_quality.label
       value: "Qualité de la physique des particules"
+    - key: settings.entry.performances.skin_weights.label
+      value: "Poids d'ossature (skin)"
+    - key: settings.entry.performances.skin_weights.option.one_bone
+      value: "1 os"
+    - key: settings.entry.performances.skin_weights.option.two_bones
+      value: "2 os"
+    - key: settings.entry.performances.skin_weights.option.four_bones
+      value: "4 os"
+    - key: settings.entry.performances.skin_weights.option.unlimited
+      value: "Illimité"
     - key: settings.entry.graphic.quality.label
       value: "Qualité"
     - key: settings.entry.graphic.anti_aliasing.label
