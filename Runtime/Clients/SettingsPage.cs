@@ -43,10 +43,20 @@ namespace Nox.Settings.Clients {
 			};
 
 
-		private void Refresh() {
+		private void Refresh()
+			=> RefreshAsync().Forget();
+
+		/// <summary>
+		/// Rebuilds the navigation list and the content page, then refreshes the header.
+		/// Returns once both lists have been rebuilt, so callers (e.g. the search filter)
+		/// can force a layout update on the settled hierarchy.
+		/// </summary>
+		internal async UniTask RefreshAsync() {
 			if (!_component) return;
-			_component.UpdateNavigation().Forget();
-			_component.UpdateContent().Forget();
+			await UniTask.WhenAll(
+				_component.UpdateNavigation(),
+				_component.UpdateContent()
+			);
 			_component.UpdateIcon().Forget();
 			_component.UpdateTitles();
 		}

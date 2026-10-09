@@ -7,7 +7,6 @@ using Nox.CCK.Utils;
 using Nox.Settings.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
-using Transform = UnityEngine.Transform;
 
 namespace Nox.Settings.Clients {
 	public class SettingsComponent : MonoBehaviour {
@@ -27,6 +26,7 @@ namespace Nox.Settings.Clients {
 
 		private readonly Dictionary<IHandler, GameObject> _handlerBoxes = new();
 		private readonly Dictionary<GameObject, IHandler[]> _groupBoxes  = new();
+		private readonly Dictionary<string, GameObject>    _navigationButtons = new();
 
 		public static (GameObject, SettingsComponent) Generate(SettingsPage settingsPage, RectTransform parent) {
 			var iconAsset      = Client.GetAsset<GameObject>("ui:prefabs/header_icon.prefab");
@@ -135,22 +135,58 @@ namespace Nox.Settings.Clients {
 		public async UniTask UpdateNavigation() {
 			var btn = await Client.GetAssetAsync<GameObject>("ui:prefabs/btn_icon.prefab");
 
-			var page = Page.GetCategories();
+			var pages = Page.GetCategories();
+			var ids   = new HashSet<string>(pages.Select(p => p.GetId()));
 
-			foreach (Transform tf in navigation)
-				Destroy(tf.gameObject);
+			// Keep the buttons that are still needed: only the ones that must go are
+			// removed, so a kept page does not reload its icon.
+			foreach (var child in navigation.gameObject.GetChilds()) {
+				if (child == null)
+					continue;
 
-			foreach (var p in page) {
-				var o = Instantiate(btn, navigation);
-				UpdateIcon(p, o).Forget();
-				var text = Reference.GetComponent<TextLanguage>("text", o);
-				text.UpdateText(p.GetLabel());
+				string id = null;
+				foreach (var pair in _navigationButtons)
+					if (pair.Value == child) {
+						id = pair.Key;
+						break;
+					}
 
-				var button = o.GetComponent<Button>();
-				button.onClick.AddListener(() => OnChangePage(p.GetId()));
+				// Still wanted and still tracked: keep it as is.
+				if (id != null && ids.Contains(id))
+					continue;
 
-				o.name = $"{p.GetId()}_{o.GetId()}";
-				o.SetActive(true);
+				if (id != null)
+					_navigationButtons.Remove(id);
+
+				// Destroy is deferred to the end of the frame: an active child would still
+				// count in the layout, leaving the scroll content sized for the old list.
+				child.SetActive(false);
+				child.Destroy();
+			}
+
+			// Forget the buttons that were destroyed elsewhere (whole page rebuild).
+			foreach (var id in _navigationButtons.Keys.ToArray())
+				if (!_navigationButtons[id])
+					_navigationButtons.Remove(id);
+
+			for (var i = 0; i < pages.Length; i++) {
+				var id = pages[i].GetId();
+
+				if (!_navigationButtons.TryGetValue(id, out var o) || !o) {
+					o = Instantiate(btn, navigation);
+					_navigationButtons[id] = o;
+					UpdateIcon(pages[i], o).Forget();
+					var text = Reference.GetComponent<TextLanguage>("text", o);
+					text.UpdateText(pages[i].GetLabel());
+
+					var button = o.GetComponent<Button>();
+					button.onClick.AddListener(() => OnChangePage(id));
+
+					o.name = $"{id}_{o.GetId()}";
+					o.SetActive(true);
+				}
+
+				o.transform.SetSiblingIndex(i);
 			}
 
 			UpdateLayout.UpdateImmediate(leftContainer);
@@ -229,7 +265,22 @@ namespace Nox.Settings.Clients {
 			if (Page.Filter == query)
 				return;
 			Page.Filter = query;
-			Page.OnRefresh();
+			ApplyFilterAsync().Forget();
+		}
+
+		/// <summary>
+		/// Rebuilds the settings after a search, then forces the layout of the page,
+		/// its page list and its content page once the async rebuilds have settled.
+		/// </summary>
+		private async UniTaskVoid ApplyFilterAsync() {
+			await Page.RefreshAsync();
+			if (!this)
+				return;
+			UpdateLayout.UpdateImmediate(gameObject);
+			if (leftContainer)
+				UpdateLayout.UpdateImmediate(leftContainer);
+			if (content)
+				UpdateLayout.UpdateImmediate(content);
 		}
 
 		internal async UniTask UpdateContent() {
@@ -247,8 +298,10 @@ namespace Nox.Settings.Clients {
 			_handlerBoxes.Clear();
 			_groupBoxes.Clear();
 
-			foreach (Transform tf in content)
-				Destroy(tf.gameObject);
+			foreach (var child in content.gameObject.GetChilds()) {
+				child.SetActive(false);
+				child.Destroy();
+			}
 
 			var details = Page.GetCategory();
 			if (details == null) {
