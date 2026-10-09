@@ -18,6 +18,10 @@ namespace Nox.Settings.Clients {
 		private CancellationTokenSource _token;
 		public  RectTransform           navigation;
 		public  GameObject              leftContainer;
+		public  TMPro.TMP_InputField    searchField;
+		public  Button                  searchButton;
+		public  Image                   searchImage;
+		private CancellationTokenSource _searchToken;
 
 		public SettingsPage Page;
 
@@ -36,17 +40,45 @@ namespace Nox.Settings.Clients {
 
 			var component = content.AddComponent<SettingsComponent>();
 			component.Page = settingsPage;
-			content.name   = $"[{settingsPage.GetKey()}_{content.GetEntityId().GetHashCode()}]";
+			content.name   = $"[{settingsPage.GetKey()}_{content.GetId()}]";
 
 			var splitContent = Reference.GetComponent<RectTransform>("content", content);
 
 			// left container
-
 			component.leftContainer = Instantiate(containerAsset, splitContent);
+
+			var withSearch = Instantiate(
+				Client.GetAsset<GameObject>("ui:prefabs/with_search.prefab"),
+				Reference.GetComponent<RectTransform>("content", component.leftContainer)
+			);
+			var searchHeader       = Reference.GetReference("header", withSearch);
+			component.searchField  = Reference.GetComponent<TMPro.TMP_InputField>("input", searchHeader);
+			component.searchButton = Reference.GetComponent<Button>("submit", searchHeader);
+			component.searchImage  = component.searchButton
+				? Reference.GetComponent<Image>("image", component.searchButton.gameObject)
+				: null;
+
+			if (component.searchImage)
+				component.searchImage.sprite = Client.GetAsset<Sprite>("ui:icons/search.png");
+			if (component.searchField) {
+				component.searchField.onSubmit.AddListener(component.OnSearchSubmit);
+				component.searchField.onValueChanged.AddListener(component.OnSearchChanged);
+				var placeholder = component.searchField.placeholder
+					? component.searchField.placeholder.GetComponent<TextLanguage>()
+					: null;
+				placeholder?.UpdateText("settings.search.placeholder");
+				// No handler icon in the settings filter bar.
+				var inputImageContainer = Reference.GetReference(
+					"image_container",
+					component.searchField.gameObject
+				);
+				inputImageContainer?.SetActive(false);
+			}
+			component.searchButton?.onClick.AddListener(component.OnSearchButton);
 
 			var navigation = Instantiate(
 				scrollAsset,
-				Reference.GetComponent<RectTransform>("content", component.leftContainer)
+				Reference.GetComponent<RectTransform>("content", withSearch)
 			);
 
 			component.navigation = Reference.GetComponent<RectTransform>(
@@ -103,10 +135,7 @@ namespace Nox.Settings.Clients {
 		public async UniTask UpdateNavigation() {
 			var btn = await Client.GetAssetAsync<GameObject>("ui:prefabs/btn_icon.prefab");
 
-			var page = Main.Handlers
-				.Select(hand => hand.GetPath().FirstOrDefault())
-				.Distinct()
-				.Select(p => Page.GetCategory(p));
+			var page = Page.GetCategories();
 
 			foreach (Transform tf in navigation)
 				Destroy(tf.gameObject);
@@ -120,7 +149,7 @@ namespace Nox.Settings.Clients {
 				var button = o.GetComponent<Button>();
 				button.onClick.AddListener(() => OnChangePage(p.GetId()));
 
-				o.name = $"{p.GetId()}_{o.GetEntityId().GetHashCode()}";
+				o.name = $"{p.GetId()}_{o.GetId()}";
 				o.SetActive(true);
 			}
 
@@ -142,14 +171,12 @@ namespace Nox.Settings.Clients {
 		}
 
 		private void OnHandlerValueChanged(IHandler _) {
-			foreach (var (h, go) in _handlerBoxes) {
+			foreach (var (h, go) in _handlerBoxes)
 				if (go)
-					go.SetActive(h.IsActive());
-			}
-			foreach (var (groupBox, handlers) in _groupBoxes) {
+					go.SetActive(h.IsActive);
+			foreach (var (groupBox, handlers) in _groupBoxes)
 				if (groupBox)
-					groupBox.SetActive(handlers.Any(h => h.IsActive()));
-			}
+					groupBox.SetActive(handlers.Any(h => h.IsActive));
 			UpdateLayout.UpdateImmediate(content);
 		}
 
@@ -158,6 +185,51 @@ namespace Nox.Settings.Clients {
 			_token?.Cancel();
 			_token?.Dispose();
 			_token = null;
+			_searchToken?.Cancel();
+			_searchToken?.Dispose();
+			_searchToken = null;
+			if (searchField) {
+				searchField.onSubmit.RemoveListener(OnSearchSubmit);
+				searchField.onValueChanged.RemoveListener(OnSearchChanged);
+			}
+			if (searchButton)
+				searchButton.onClick.RemoveListener(OnSearchButton);
+		}
+
+		/// <summary>Applied when the search field is submitted (Enter or the search button).</summary>
+		public void OnSearchSubmit(string query)
+			=> ApplyFilter(query);
+
+		/// <summary>Applied when the search button is clicked.</summary>
+		public void OnSearchButton()
+			=> ApplyFilter(searchField ? searchField.text : null);
+
+		private void OnSearchChanged(string query) {
+			if (Page == null)
+				return;
+			// Debounce while typing so the list is not rebuilt on every keystroke.
+			_searchToken?.Cancel();
+			_searchToken?.Dispose();
+			_searchToken = new CancellationTokenSource();
+			DebounceFilter(query, _searchToken.Token).Forget();
+		}
+
+		private async UniTaskVoid DebounceFilter(string query, CancellationToken token) {
+			var cancelled = await UniTask.Delay(200, ignoreTimeScale: true, cancellationToken: token)
+				.SuppressCancellationThrow();
+			if (cancelled || Page == null)
+				return;
+			ApplyFilter(query);
+		}
+
+		private void ApplyFilter(string query) {
+			if (Page == null)
+				return;
+			query = (query ?? string.Empty).Trim();
+			if (Page.Filter == query)
+				return;
+			Page.Filter = query;
+			Page.OnRefresh();
 		}
 
 		internal async UniTask UpdateContent() {
@@ -217,9 +289,9 @@ namespace Nox.Settings.Clients {
 						continue;
 					}
 
-					handlerBox.name = $"{handler.GetPath().LastOrDefault()}_{handlerBox.GetEntityId().GetHashCode()}";
+					handlerBox.name = $"{handler.Path.LastOrDefault()}_{handlerBox.GetId()}";
 					_handlerBoxes[handler] = handlerBox;
-					handlerBox.SetActive(handler.IsActive());
+					handlerBox.SetActive(handler.IsActive);
 					handlerBox.transform.localPosition = Vector3.zero;
 					handlerBox.transform.localRotation = Quaternion.identity;
 					handlerBox.transform.localScale = Vector3.one;
@@ -227,7 +299,7 @@ namespace Nox.Settings.Clients {
 
 				token.ThrowIfCancellationRequested();
 				_groupBoxes[groupBox] = group.Handlers;
-				groupBox.SetActive(group.Handlers.Any(h => h.IsActive()));
+				groupBox.SetActive(group.Handlers.Any(h => h.IsActive));
 			}
 
 			token.ThrowIfCancellationRequested();

@@ -5,20 +5,20 @@ using Nox.Settings.Runtime;
 
 namespace Nox.Settings.Handlers {
 	public sealed class BloomIntensity : RangeHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "quality", "bloom_intensity" };
 
-		public override int GetOrder() => 1003;
+		public override int Order => 31003;
 
 		public BloomIntensity() {
 			SetRange(0f, 1f);
 			SetStep(0.001f);
 			SetValue(Value);
-			SetLabelKey($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabelKey($"settings.entry.{string.Join(".", Path)}.label");
 			SetValueKey("settings.range.value.percent");
 		}
 
-		public static float Value {
+		public static new float Value {
 			get
 				=> Config.Load()
 					.Get(

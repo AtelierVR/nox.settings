@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nox.CCK.Settings;
 using Nox.CCK.Utils;
 using Nox.Settings.Clients;
@@ -11,10 +10,10 @@ using UnityEngine;
 
 namespace Nox.Settings.Handlers {
 	public sealed class ShadowQuality : DropdownHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "quality", "shadow_quality" };
 
-		public override int GetOrder() => 1001;
+		public override int Order => 31001;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "shadow_quality" };
@@ -35,7 +34,7 @@ namespace Nox.Settings.Handlers {
 		}
 
 		public ShadowQuality() {
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			SetOptions(BuildOptions());
 			var saved = Config.Load().Get(GetConfigPath(), (int)Value);
 			Value = (ShadowResolution)saved;
@@ -50,7 +49,7 @@ namespace Nox.Settings.Handlers {
 			}
 		}
 
-		private static ShadowResolution Value {
+		private static new ShadowResolution Value {
 			get => QualitySettings.shadowResolution;
 			set {
 				QualitySettings.shadowResolution = value;

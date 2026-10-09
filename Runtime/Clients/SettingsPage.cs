@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nox.CCK.Language;
 using Nox.CCK.Utils;
 using Nox.Settings.Runtime;
 using Nox.UI;
@@ -19,6 +20,7 @@ namespace Nox.Settings.Clients {
 		private  GameObject        _content;
 		private  SettingsComponent _component;
 		private  string[]          _current;
+		internal string            Filter = string.Empty;
 
 		public void OnRefresh()
 			=> Refresh();
@@ -78,22 +80,63 @@ namespace Nox.Settings.Clients {
 			Main.OnHandlerRemoved.RemoveListener(OnSettingsChanged);
 		}
 
-		public CategoryDetails GetCategory() {
-			var category = _current.Length > 0 ? _current[0] : null;
-			var handler  = Main.Handlers.FirstOrDefault(h => h.Split().Item1 == category);
+		/// <summary>
+		/// Whether the handler matches the current filter (label or path).
+		/// A handler that is not displayed (order handler) never matches.
+		/// </summary>
+		internal bool MatchesFilter(IHandler handler) {
 			if (handler == null)
-				category = Main.Handlers.FirstOrDefault()?.Split().Item1;
-			return string.IsNullOrEmpty(category) ? null : new CategoryDetails(category);
+				return false;
+			if (string.IsNullOrWhiteSpace(Filter))
+				return true;
+			var query = Filter.Trim();
+			var path  = string.Join(".", handler.Path);
+			if (path.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+				return true;
+			var label = LanguageManager.Get($"settings.entry.{path}.label");
+			return !string.IsNullOrEmpty(label)
+				&& label.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
-		public CategoryDetails GetCategory(string category) {
-			var handler = Main.Handlers.FirstOrDefault(h => h.Split().Item1 == category);
-			return handler == null ? null : new CategoryDetails(category);
+		/// <summary>
+		/// All displayable settings pages (categories) that contain at least one
+		/// active handler matching the filter, ordered by the greatest
+		/// <see cref="IHandler.Order"/> found among their handlers.
+		/// </summary>
+		public CategoryDetails[] GetCategories() {
+			var handlers = Main.Handlers
+				.Where(h => h.IsActive && MatchesFilter(h))
+				.Where(h => !string.IsNullOrEmpty(h.Split().Item1))
+				.ToArray();
+
+			return handlers
+				.Select(h => h.Split().Item1)
+				.Distinct()
+				// OrderBy is stable: categories sharing the same order keeps
+				// their registration order.
+				.OrderBy(id => handlers
+					.Where(h => h.Split().Item1 == id)
+					.Max(h => h.Order))
+				.Select(id => new CategoryDetails(id))
+				.ToArray();
 		}
+
+		public CategoryDetails GetCategory() {
+			var categories = GetCategories();
+			if (categories.Length == 0)
+				return null;
+			var current = _current.Length > 0 ? _current[0] : null;
+			return categories.FirstOrDefault(c => c.GetId() == current) ?? categories[0];
+		}
+
+		public CategoryDetails GetCategory(string category)
+			=> Main.Handlers.Any(h => h.IsActive && h.Split().Item1 == category)
+				? new CategoryDetails(category)
+				: null;
 
 		public GroupDetails[] GetGroups(string category)
 			=> Main.Handlers
-				.Where(h => h.Split().Item1 == category)
+				.Where(h => h.IsActive && MatchesFilter(h) && h.Split().Item1 == category)
 				.GroupBy(h => h.Split().Item2)
 				.Select(g => {
 					var ordered = g.ToArray().OrderBy(h => h).ToArray();
@@ -101,7 +144,7 @@ namespace Nox.Settings.Clients {
 						Handlers = ordered,
 						Category = category,
 						Group    = g.Key,
-						Order    = ordered.Length > 0 ? ordered[0].GetOrder() : int.MaxValue
+						Order    = ordered.Length > 0 ? ordered[0].Order : int.MaxValue
 					};
 				})
 				.OrderBy(g => g)

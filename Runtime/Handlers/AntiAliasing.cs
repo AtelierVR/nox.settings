@@ -11,10 +11,10 @@ using UnityEngine.Rendering.Universal;
 
 namespace Nox.Settings.Handlers {
 	public sealed class AntiAliasing : DropdownHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "anti_aliasing", "mode" };
 
-		public override int GetOrder() => 2000;
+		public override int Order => 32000;
 
 		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/dropdown.prefab");
@@ -37,7 +37,7 @@ namespace Nox.Settings.Handlers {
 		}
 
 		public AntiAliasing() {
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			SetOptions(GetAntiAliasingOptions());
 			Value = Config.Load().Get(GetConfigPath(), Value);
 			SetValue(Value.ToString().ToSnakeCase(), false);
@@ -67,7 +67,7 @@ namespace Nox.Settings.Handlers {
 			}
 		}
 
-		public static AntialiasingMode Value {
+		public static new AntialiasingMode Value {
 			get => (AntialiasingMode)Config.Load().Get(GetConfigPath(), (int)AntialiasingMode.None);
 			set {
 				var config = Config.Load();

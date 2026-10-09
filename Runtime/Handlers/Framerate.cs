@@ -32,10 +32,10 @@ namespace Nox.Settings.Handlers {
 
 		private FramerateBehavior Behavior;
 
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "performances", "framerate" };
 
-		public override int GetOrder() => 0;
+		public override int Order => 20000;
 
 		public static string[] GetConfigPath()
 			=> new[] { "settings", "performances", "framerate" };
@@ -54,10 +54,10 @@ namespace Nox.Settings.Handlers {
 			SetRange(VSync, MaxFramerate);
 			SetStep(1f);
 			SetValue(Value);
-			SetLabelKey($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabelKey($"settings.entry.{string.Join(".", Path)}.label");
 		}
 
-		public static float Value {
+		public static new float Value {
 			get => Config.Load().Get(GetConfigPath(), VSync);
 			set {
 				var v = Mathf.RoundToInt(value);

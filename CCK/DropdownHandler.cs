@@ -32,7 +32,7 @@ namespace Nox.CCK.Settings {
 			var builder = GetModalBuilder(menu);
 			if (builder == null)
 				return;
-			builder.SetTitle($"settings.entry.{string.Join(".", GetPath())}.label");
+			builder.SetTitle($"settings.entry.{string.Join(".", Path)}.label");
 			builder.SetClosable(true);
 			builder.SetOptions(e => SetValue(e), _options);
 			builder.SetContent("empty");

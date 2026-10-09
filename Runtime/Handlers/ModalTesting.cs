@@ -7,8 +7,10 @@ using Nox.Settings.Runtime;
 
 namespace Nox.Settings.Handlers {
 	public sealed class ModalTesting : ButtonHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "debug", "modal" };
+
+		public override int Order => 100000;
 
 		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/button.prefab");

@@ -6,7 +6,6 @@ using Nox.CCK.Mods.Cores;
 using Nox.CCK.Mods.Events;
 using Nox.CCK.Mods.Initializers;
 using Nox.Controllers;
-using Nox.Settings;
 using Nox.Settings.Commands;
 using Nox.Terminal;
 using UnityEngine.Events;
@@ -43,13 +42,13 @@ namespace Nox.Settings.Runtime {
 				return null;
 			}
 
-			if (string.IsNullOrWhiteSpace(handler.GetPath().FirstOrDefault())) {
+			if (string.IsNullOrWhiteSpace(handler.Path.FirstOrDefault())) {
 				CoreAPI.LoggerAPI.LogError("Cannot register a setting handler with an empty id");
 				return null;
 			}
 
-			if (Has(handler.GetPath())) {
-				CoreAPI.LoggerAPI.LogError($"Setting handler with id {handler.GetPath()} already exists");
+			if (Has(handler.Path)) {
+				CoreAPI.LoggerAPI.LogError($"Setting handler with id {handler.Path} already exists");
 				return null;
 			}
 
@@ -74,10 +73,10 @@ namespace Nox.Settings.Runtime {
 		}
 
 		public IHandler Get(string[] path)
-			=> Handlers.FirstOrDefault(h => h.GetPath().SequenceEqual(path));
+			=> Handlers.FirstOrDefault(h => h.Path.SequenceEqual(path));
 
 		public bool Has(string[] path)
-			=> Handlers.Exists(b => b.GetPath().SequenceEqual(path));
+			=> Handlers.Exists(b => b.Path.SequenceEqual(path));
 
 		internal static ITerminalAPI TerminalAPI
 			=> Instance.CoreAPI.ModAPI
@@ -120,7 +119,7 @@ namespace Nox.Settings.Runtime {
 			_controllerChangedSub = null;
 			SettingsNotifier.OnHandlerUpdated -= PropagateHandlerUpdated;
 			foreach (var handler in Handlers.ToArray())
-				Remove(handler.GetPath());
+				Remove(handler.Path);
 			Handlers.Clear();
 			_handlers = Array.Empty<IHandler>();
 			// Unregister terminal command

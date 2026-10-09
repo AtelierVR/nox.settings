@@ -11,8 +11,10 @@ using Nox.Settings.Runtime;
 
 namespace Nox.Settings.Handlers {
 	public sealed class Language : DropdownHandler, IDisposable {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "accessibility", "interface", "language" };
+
+		public override int Order => 10000;
 
 		protected override GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/dropdown.prefab");
@@ -24,7 +26,7 @@ namespace Nox.Settings.Handlers {
 			LanguageManager.OnPackListUpdated.AddListener(OnPacksUpdated);
 			LanguageManager.OnLanguageChanged.AddListener(OnLanguageChanged);
 			OnPacksUpdated();
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			Value = Config.Load().Get("settings.language", Value);
 			SetValue(LanguageManager.CurrentLanguage, false);
 		}
@@ -33,7 +35,7 @@ namespace Nox.Settings.Handlers {
 		protected override void OnValueChanged(string value)
 			=> Value = value;
 
-		private static string Value {
+		private static new string Value {
 			get => LanguageManager.CurrentLanguage;
 			set {
 				LanguageManager.CurrentLanguage = value;

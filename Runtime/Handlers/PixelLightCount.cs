@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Nox.Settings.Handlers {
 	public sealed class PixelLightCount : RangeHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "quality", "pixel_light_count" };
 
-		public override int GetOrder() => 1002;
+		public override int Order => 31002;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "pixel_light_count" };
@@ -20,7 +20,7 @@ namespace Nox.Settings.Handlers {
 			SetRange(0f, 8f);
 			SetStep(1f);
 			SetValue(Value);
-			SetLabelKey($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabelKey($"settings.entry.{string.Join(".", Path)}.label");
 			SetValueKey("settings.range.value.float");
 		}
 
@@ -28,7 +28,7 @@ namespace Nox.Settings.Handlers {
 			Value = Mathf.RoundToInt(value);
 		}
 
-		private static int Value {
+		private static new int Value {
 			get => Config.Load().Get(GetConfigPath(), QualitySettings.pixelLightCount);
 			set {
 				QualitySettings.pixelLightCount = value;

@@ -11,9 +11,9 @@ namespace Nox.Settings {
 	/// </summary>
 	public interface IHandler : IComparable<IHandler> {
 		/// <summary>
-		/// Get the path of the handler in the settings hierarchy.
+		/// Path of the handler in the settings hierarchy.
 		/// </summary>
-		public string[] GetPath();
+		public string[] Path { get; }
 
 		/// <summary>
 		/// Get the value of the handler.
@@ -21,14 +21,14 @@ namespace Nox.Settings {
 		public object Value { get; }
 
 		/// <summary>
-		/// Check if the handler is active.
+		/// Whether the handler is active.
 		/// </summary>
-		public bool IsActive();
+		public bool IsActive { get; }
 
 		/// <summary>
-		/// Get the order of the handler for sorting.
+		/// Order of the handler for sorting.
 		/// </summary>
-		public int GetOrder() => 0;
+		public int Order { get; }
 		/// <summary>
 		/// Check if the handler can be triggered by a command.
 		/// </summary>

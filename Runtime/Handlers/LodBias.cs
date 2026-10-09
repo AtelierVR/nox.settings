@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Nox.Settings.Handlers {
 	public sealed class LodBias : RangeHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "performances", "lod_bias" };
 
-		public override int GetOrder() => 1;
+		public override int Order => 20001;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "lod_bias" };
@@ -20,7 +20,7 @@ namespace Nox.Settings.Handlers {
 			SetRange(0.25f, 4f);
 			SetStep(0.01f);
 			SetValue(Value);
-			SetLabelKey($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabelKey($"settings.entry.{string.Join(".", Path)}.label");
 			SetValueKey("settings.range.value.float");
 		}
 
@@ -28,7 +28,7 @@ namespace Nox.Settings.Handlers {
 			Value = value;
 		}
 
-		private static float Value {
+		private static new float Value {
 			get => Config.Load().Get(GetConfigPath(), QualitySettings.lodBias);
 			set {
 				QualitySettings.lodBias = value;

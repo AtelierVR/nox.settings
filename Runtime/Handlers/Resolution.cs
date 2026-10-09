@@ -10,10 +10,10 @@ using Nox.Settings.Runtime;
 
 namespace Nox.Settings.Handlers {
 	public sealed class Resolution : DropdownHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "display", "resolution" };
 
-		public override int GetOrder() => 0;
+		public override int Order => 30000;
 
 		public static string[] GetConfigPath(string s)
 			=> new[] { "settings", "graphic", s };
@@ -31,7 +31,7 @@ namespace Nox.Settings.Handlers {
 			=> Client.UiAPI.MakeModal(menu);
 
 		public Resolution() {
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			SetOptions(GetAvailableResolutions());
 			var v = Value;
 			Value = v;
@@ -42,7 +42,7 @@ namespace Nox.Settings.Handlers {
 			#endif
 		}
 
-		public static Vector2Int Value {
+		public static new Vector2Int Value {
 			get {
 				var config = Config.Load();
 				var width  = config.Get(GetConfigWidthPath(), Screen.currentResolution.width);

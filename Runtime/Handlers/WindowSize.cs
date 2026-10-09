@@ -13,10 +13,10 @@ namespace Nox.Settings.Handlers {
 		private const string Maximized  = "maximized";
 		private const string Windowed   = "windowed";
 
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "display", "window_size" };
 
-		public override int GetOrder() => 1;
+		public override int Order => 30001;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "window_mode" };
@@ -35,7 +35,7 @@ namespace Nox.Settings.Handlers {
 			=> Client.UiAPI.MakeModal(menu);
 
 		public WindowSize() {
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			SetOptions(GetAvailableSize());
 			Value = Value;
 			SetValue(GetCurrentWindowMode(), false);
@@ -56,7 +56,7 @@ namespace Nox.Settings.Handlers {
 			return Windowed;
 		}
 
-		private static string Value {
+		private static new string Value {
 			get {
 				var config = Config.Load();
 				return config.Get(GetConfigPath(), Windowed);

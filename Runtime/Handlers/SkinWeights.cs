@@ -24,10 +24,10 @@ namespace Nox.Settings.Handlers {
 			return list.ToArray();
 		}
 
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "performances", "skin_weights" };
 
-		public override int GetOrder() => 3;
+		public override int Order => 20003;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "performances", "skin_weights" };
@@ -49,7 +49,7 @@ namespace Nox.Settings.Handlers {
 		}
 
 		public SkinWeights() {
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			SetOptions(BuildOptions());
 			var saved = Config.Load().Get(GetConfigPath(), (int)CurrentValue);
 			CurrentValue = Normalize((UnityEngine.SkinWeights)saved);

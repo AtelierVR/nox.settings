@@ -8,17 +8,17 @@ using UnityEngine.UI;
 
 namespace Nox.CCK.Settings {
 	public abstract class ToggleHandler : IHandler {
-		public abstract string[] GetPath();
+		public abstract string[] Path { get; }
 
-		public virtual bool IsActive()
+		public virtual bool IsActive
 			=> true;
 
 		public virtual void OnUpdated(IHandler handler) { }
 
-		public virtual int GetOrder() => 0;
+		public virtual int Order => 0;
 
 		public virtual int CompareTo(IHandler other)
-			=> GetOrder().CompareTo(other.GetOrder());
+			=> Order.CompareTo(other.Order);
 
 		private Toggle _toggle;
 		private TextLanguage _textLabel;

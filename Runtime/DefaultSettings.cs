@@ -25,7 +25,7 @@ namespace Nox.Settings.Runtime {
 			};
 
 		public static (string, string, string) Split(this IHandler handler) {
-			var path = handler.GetPath();
+			var path = handler.Path;
 			return path.Length switch {
 				0 => default,
 				1 => ("general", "general", path[0]),

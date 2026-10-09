@@ -5,8 +5,10 @@ using Nox.Settings.Runtime;
 
 namespace Nox.Settings.Handlers {
 	public sealed class Brightness : RangeHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "accessibility", "visual", "brightness" };
+
+		public override int Order => 10000;
 
 		override protected GameObject GetPrefab()
 			=> Main.Instance.CoreAPI.AssetAPI.GetAsset<GameObject>("prefabs/range.prefab");
@@ -15,11 +17,11 @@ namespace Nox.Settings.Handlers {
 			SetRange(0.2f, 1f);
 			SetStep(0.001f);
 			SetValue(Value);
-			SetLabelKey($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabelKey($"settings.entry.{string.Join(".", Path)}.label");
 			SetValueKey("settings.range.value.percent");
 		}
 
-		public static float Value {
+		public static new float Value {
 			get
 				=> Config.Load()
 					.Get(

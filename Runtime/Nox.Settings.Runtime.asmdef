@@ -9,7 +9,8 @@
         "Nox.UI",
         "Nox.CCK.Settings",
         "Unity.RenderPipelines.Universal.Runtime",
-        "Nox.Terminal"
+        "Nox.Terminal",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

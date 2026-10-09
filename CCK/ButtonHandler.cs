@@ -7,11 +7,10 @@ using Nox.Settings;
 using Nox.UI;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace Nox.CCK.Settings {
 	public abstract class ButtonHandler : IHandler {
-		public abstract string[] GetPath();
+		public abstract string[] Path { get; }
 
 		public virtual object Value => null;
 
@@ -19,15 +18,15 @@ namespace Nox.CCK.Settings {
 
 		public abstract void OnClick(IContext context);
 
-		public virtual bool IsActive()
+		public virtual bool IsActive
 			=> true;
 
 		public virtual void OnUpdated(IHandler handler) { }
 
-		public virtual int GetOrder() => 0;
+		public virtual int Order => 0;
 
 		public virtual int CompareTo(IHandler other)
-			=> GetOrder().CompareTo(other.GetOrder());
+			=> Order.CompareTo(other.Order);
 
 		protected Button _button;
 		private TextLanguage _textLabel;

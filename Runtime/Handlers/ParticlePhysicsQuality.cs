@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Nox.Settings.Handlers {
 	public sealed class ParticlePhysicsQuality : RangeHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "performances", "physics_quality" };
 
-		public override int GetOrder() => 2;
+		public override int Order => 20002;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "particle_physics_quality" };
@@ -20,7 +20,7 @@ namespace Nox.Settings.Handlers {
 			SetRange(4f, 4096f);
 			SetStep(4f);
 			SetValue(Value);
-			SetLabelKey($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabelKey($"settings.entry.{string.Join(".", Path)}.label");
 			SetValueKey("settings.range.value.float");
 		}
 
@@ -28,7 +28,7 @@ namespace Nox.Settings.Handlers {
 			Value = Mathf.RoundToInt(value);
 		}
 
-		private static int Value {
+		private static new int Value {
 			get => Config.Load().Get(GetConfigPath(), QualitySettings.particleRaycastBudget);
 			set {
 				QualitySettings.particleRaycastBudget = value;

@@ -3,7 +3,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nox.CCK.Language;
 using Nox.CCK.Utils;
-using Nox.Settings;
 using Nox.Settings.Runtime;
 using Nox.Terminal;
 
@@ -54,7 +53,8 @@ namespace Nox.Settings.Commands {
 					var partial = parts.Length >= 3 && !input.EndsWith(' ') ? parts[2] : "";
 					var handlers = Main.Handlers;
 					return handlers
-						.Select(h => string.Join(".", h.GetPath()))
+						.Where(h => h.IsActive)
+						.Select(h => string.Join(".", h.Path))
 						.Where(p => p.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
 						.Select(p => $"{CommandWithPrefix} {subCommand} {p}")
 						.ToArray();
@@ -102,7 +102,7 @@ namespace Nox.Settings.Commands {
 		}
 
 		private static bool HandleList(Terminal.IContext context, bool printing) {
-			var handlers = Main.Handlers;
+			var handlers = Main.Handlers.Where(h => h.IsActive).ToList();
 
 			if (handlers.Count == 0) {
 				if (printing)
@@ -114,7 +114,7 @@ namespace Nox.Settings.Commands {
 			if (printing) {
 				context.PrintLn(LanguageManager.Get("terminal.command.settings.list.header", handlers.Count));
 				foreach (var handler in handlers) {
-					var path = string.Join(".", handler.GetPath());
+					var path = string.Join(".", handler.Path);
 					if (handler.IsTriggerable)
 						context.PrintLn($"  {path} [trigger]");
 					else {

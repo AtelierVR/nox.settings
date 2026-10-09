@@ -21,6 +21,8 @@ MonoBehaviour:
       value: "Accessibility"
     - key: settings.no_settings.title
       value: "No Settings"
+    - key: settings.search.placeholder
+      value: "Search settings"
     - key: settings.range.type.empty
       value: ""
     - key: settings.range.value.integer

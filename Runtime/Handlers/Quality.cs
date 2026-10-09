@@ -9,10 +9,10 @@ using Nox.Settings.Runtime;
 
 namespace Nox.Settings.Handlers {
 	public sealed class Quality : DropdownHandler {
-		public override string[] GetPath()
+		public override string[] Path
 			=> new[] { "graphic", "quality", "preset" };
 
-		public override int GetOrder() => 1000;
+		public override int Order => 31000;
 
 		private static string[] GetConfigPath()
 			=> new[] { "settings", "graphic", "quality" };
@@ -24,7 +24,7 @@ namespace Nox.Settings.Handlers {
 			=> Client.UiAPI.MakeModal(menu);
 
 		public Quality() {
-			SetLabel($"settings.entry.{string.Join(".", GetPath())}.label");
+			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
 			var res = QualitySettings.names
 				.ToDictionary(quality => quality, quality => new[] { "value", quality });
 			SetOptions(res);
@@ -38,7 +38,7 @@ namespace Nox.Settings.Handlers {
 			Value = index;
 		}
 
-		private static int Value {
+		private static new int Value {
 			get => QualitySettings.GetQualityLevel();
 			set {
 				QualitySettings.SetQualityLevel(value);
