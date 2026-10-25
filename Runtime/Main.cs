@@ -5,6 +5,7 @@ using Nox.CCK.Language;
 using Nox.CCK.Mods.Cores;
 using Nox.CCK.Mods.Events;
 using Nox.CCK.Mods.Initializers;
+using Nox.CCK.Utils;
 using Nox.Controllers;
 using Nox.Settings.Commands;
 using Nox.Terminal;
@@ -90,6 +91,29 @@ namespace Nox.Settings.Runtime {
 		private static void OnControllerChangedEvent(EventData _)
 			=> PropagateHandlerUpdated(null);
 
+		/// <summary>A value changed: the settings UI rereads everything to stay in sync.</summary>
+		private static void OnConfigChanged(string _)
+			=> PropagateHandlerUpdated(null);
+
+		/// <summary>The config was reloaded from disk: every handler applies its stored value.</summary>
+		private static void OnConfigReloaded() {
+			foreach (var handler in Handlers.ToArray()) {
+				var path  = new[] { "settings" }.Concat(handler.Path).ToArray();
+				var token = Config.Load().Get(path);
+
+				if (token == null)
+					continue;
+
+				try {
+					handler.Apply(token.ToObject<object>());
+				} catch (Exception exception) {
+					Instance?.CoreAPI?.LoggerAPI?.LogError($"Unable to apply the setting {string.Join(".", handler.Path)}: {exception.Message}");
+				}
+			}
+
+			PropagateHandlerUpdated(null);
+		}
+
 		private static void PropagateHandlerUpdated(IHandler changedHandler) {
 			foreach (var h in Handlers)
 				h.OnUpdated(changedHandler);
@@ -100,6 +124,8 @@ namespace Nox.Settings.Runtime {
 			Instance = this;
 			CoreAPI  = api;
 			SettingsNotifier.OnHandlerUpdated += PropagateHandlerUpdated;
+			Config.OnChanged.AddListener(OnConfigChanged);
+			Config.OnReloaded.AddListener(OnConfigReloaded);
 			_controllerChangedSub = CoreAPI.EventAPI.Subscribe("controller_changed", OnControllerChangedEvent);
 			_lang    = CoreAPI.AssetAPI.GetAsset<LanguagePack>("lang.asset");
 			LanguageManager.AddPack(_lang);
@@ -114,6 +140,8 @@ namespace Nox.Settings.Runtime {
 
 		public void OnDisposeMain() {
 			DefaultSettings.Unlisten();
+			Config.OnChanged.RemoveListener(OnConfigChanged);
+			Config.OnReloaded.RemoveListener(OnConfigReloaded);
 			if (_controllerChangedSub != null)
 				CoreAPI.EventAPI.Unsubscribe(_controllerChangedSub);
 			_controllerChangedSub = null;

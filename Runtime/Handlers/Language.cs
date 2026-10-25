@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nox.CCK.Language;
 using Nox.CCK.Settings;
 using Nox.CCK.Utils;
@@ -8,6 +9,7 @@ using Nox.UI.modals;
 using UnityEngine;
 using Nox.Settings.Clients;
 using Nox.Settings.Runtime;
+using Logger = Nox.CCK.Utils.Logger;
 
 namespace Nox.Settings.Handlers {
 	public sealed class Language : DropdownHandler, IDisposable {
@@ -27,20 +29,27 @@ namespace Nox.Settings.Handlers {
 			LanguageManager.OnLanguageChanged.AddListener(OnLanguageChanged);
 			OnPacksUpdated();
 			SetLabel($"settings.entry.{string.Join(".", Path)}.label");
-			Value = Config.Load().Get("settings.language", Value);
+			Value = Config.Load().Get(ConfigKey, Value);
 			SetValue(LanguageManager.CurrentLanguage, false);
 		}
 
-
+		/// <summary>
+		/// The value is applied and stored here: this is the only place where the language is decided,
+		/// whatever the source (dropdown, terminal, config).
+		/// </summary>
 		protected override void OnValueChanged(string value)
 			=> Value = value;
 
-		private static new string Value {
+		/// <summary>Same path as the other settings, so the terminal and the file agree.</summary>
+		private string ConfigKey
+			=> $"settings.{string.Join(".", Path)}";
+
+		private new string Value {
 			get => LanguageManager.CurrentLanguage;
 			set {
 				LanguageManager.CurrentLanguage = value;
 				var config = Config.Load();
-				config.Set("settings.language", value);
+				config.Set(ConfigKey, value);
 				config.Save();
 			}
 		}

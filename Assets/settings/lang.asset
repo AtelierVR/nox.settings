@@ -209,10 +209,16 @@ MonoBehaviour:
       value: No settings available.
     - key: terminal.command.settings.list.header
       value: "{0} settings:"
+    - key: terminal.command.settings.list.item
+      value: "  {0} = {1}"
+    - key: terminal.command.settings.list.item_trigger
+      value: "  {0} [action]"
     - key: terminal.command.settings.get.usage
       value: "Usage: settings get <path>"
     - key: terminal.command.settings.get.not_found
       value: "Setting '{0}' not found."
+    - key: terminal.command.settings.get.value
+      value: "Value: {0}"
     - key: terminal.command.settings.set.usage
       value: "Usage: settings set <path> <value>"
     - key: terminal.command.settings.set.not_found
@@ -221,6 +227,8 @@ MonoBehaviour:
       value: "Setting '{0}' set to '{1}'."
     - key: terminal.command.settings.set.error
       value: "Error setting value: {0}"
+    - key: terminal.command.settings.set.rejected
+      value: "Setting '{0}' rejected: the value cannot be applied."
     - key: terminal.command.settings.trigger.usage
       value: "Usage: settings trigger <path>"
     - key: terminal.command.settings.trigger.not_found
@@ -399,10 +407,16 @@ MonoBehaviour:
       value: Aucun paramètre disponible.
     - key: terminal.command.settings.list.header
       value: "{0} paramètres :"
+    - key: terminal.command.settings.list.item
+      value: "  {0} = {1}"
+    - key: terminal.command.settings.list.item_trigger
+      value: "  {0} [action]"
     - key: terminal.command.settings.get.usage
       value: "Usage : settings get <chemin>"
     - key: terminal.command.settings.get.not_found
       value: "Paramètre '{0}' introuvable."
+    - key: terminal.command.settings.get.value
+      value: "Valeur : {0}"
     - key: terminal.command.settings.set.usage
       value: "Usage : settings set <chemin> <valeur>"
     - key: terminal.command.settings.set.not_found
@@ -411,6 +425,8 @@ MonoBehaviour:
       value: "Paramètre '{0}' défini sur '{1}'."
     - key: terminal.command.settings.set.error
       value: "Erreur lors de la définition : {0}"
+    - key: terminal.command.settings.set.rejected
+      value: "Paramètre '{0}' refusé : la valeur ne peut pas être appliquée."
     - key: terminal.command.settings.trigger.usage
       value: "Usage : settings trigger <chemin>"
     - key: terminal.command.settings.trigger.not_found

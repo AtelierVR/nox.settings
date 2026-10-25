@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Nox.CCK.Language;
@@ -26,38 +27,70 @@ namespace Nox.Settings.Commands {
 		private readonly string[] _subCommands = { "list", "get", "set", "trigger" };
 
 		public string[] AutoComplete(string input, Terminal.IContext context = null) {
-			if (context == null || string.IsNullOrWhiteSpace(input))
+			// The context is not required: the suggestions only depend on the registered handlers.
+			if (string.IsNullOrWhiteSpace(input))
 				return Array.Empty<string>();
 
-			var inputLower = input.ToLower().Trim();
-			var parts = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			var endsWithSpace = input.EndsWith(' ');
+			var parts         = input.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-			if (!inputLower.StartsWith(CommandWithPrefix.ToLower()))
-				return CommandWithPrefix.StartsWith(inputLower)
+			// Still typing the command name ("set" must not be completed to "settings" once a space was
+			// typed: "set " is another command).
+			if (parts.Length == 1 && !endsWithSpace)
+				return CommandWithPrefix.StartsWith(parts[0], StringComparison.OrdinalIgnoreCase)
 					? new[] { CommandWithPrefix + " " }
 					: Array.Empty<string>();
 
-			// Suggest subcommands
-			if (parts.Length == 1 || (parts.Length == 2 && !input.EndsWith(' '))) {
-				var partial = parts.Length == 2 ? parts[1].ToLower() : "";
+			// Not our command.
+			if (!parts[0].Equals(CommandWithPrefix, StringComparison.OrdinalIgnoreCase))
+				return Array.Empty<string>();
+
+			// "settings " → every subcommand.
+			if (parts.Length == 1)
 				return _subCommands
-					.Where(sc => sc.StartsWith(partial))
 					.Select(sc => $"{CommandWithPrefix} {sc} ")
 					.ToArray();
-			}
+
+			// "settings se" → the matching subcommands.
+			if (parts.Length == 2 && !endsWithSpace)
+				return _subCommands
+					.Where(sc => sc.StartsWith(parts[1], StringComparison.OrdinalIgnoreCase))
+					.Select(sc => $"{CommandWithPrefix} {sc} ")
+					.ToArray();
 
 			// For "get" and "set", suggest handler paths
 			if (parts.Length >= 2) {
 				var subCommand = parts[1].ToLower();
+
 				if (subCommand is "get" or "set" or "trigger") {
-					var partial = parts.Length >= 3 && !input.EndsWith(' ') ? parts[2] : "";
-					var handlers = Main.Handlers;
-					return handlers
-						.Where(h => h.IsActive)
-						.Select(h => string.Join(".", h.Path))
-						.Where(p => p.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
-						.Select(p => $"{CommandWithPrefix} {subCommand} {p}")
-						.ToArray();
+					// "settings get accessibility.interface.language " : the path is complete, there is
+					// nothing more to suggest (a "set" expects a value that cannot be guessed).
+					if (input.EndsWith(' ') && parts.Length >= 3)
+						return Array.Empty<string>();
+
+					var partial = parts.Length >= 3 ? parts[2] : string.Empty;
+					var paths   = new List<string>();
+
+					foreach (var handler in Main.Handlers) {
+						// Only the handler path is read here: IsActive/IsTriggerable depend on running systems
+						// (XR, controllers…) that do not exist out of Play mode, and used to throw.
+						try {
+							if (subCommand == "trigger" && !handler.IsTriggerable)
+								continue;
+
+							var path = string.Join(".", handler.Path);
+
+							if (string.IsNullOrEmpty(path) || !path.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
+								continue;
+
+							// The path alone: the panel appends it to the words already typed.
+							paths.Add(path);
+						} catch (Exception) {
+							// A handler that cannot even expose its path is simply not suggested.
+						}
+					}
+
+					return paths.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 				}
 			}
 
@@ -102,7 +135,17 @@ namespace Nox.Settings.Commands {
 		}
 
 		private static bool HandleList(Terminal.IContext context, bool printing) {
-			var handlers = Main.Handlers.Where(h => h.IsActive).ToList();
+			var handlers = new List<IHandler>();
+
+			foreach (var handler in Main.Handlers) {
+				// IsActive can depend on a running system (XR, controllers…) missing out of Play mode.
+				try {
+					if (handler.IsActive)
+						handlers.Add(handler);
+				} catch (Exception) {
+					// Not listed, but it does not break the command.
+				}
+			}
 
 			if (handlers.Count == 0) {
 				if (printing)
@@ -115,11 +158,15 @@ namespace Nox.Settings.Commands {
 				context.PrintLn(LanguageManager.Get("terminal.command.settings.list.header", handlers.Count));
 				foreach (var handler in handlers) {
 					var path = string.Join(".", handler.Path);
-					if (handler.IsTriggerable)
-						context.PrintLn($"  {path} [trigger]");
-					else {
-						var value = handler.Value;
-						context.PrintLn($"  {path} = {value.ToVisualString()}");
+
+					try {
+						if (handler.IsTriggerable)
+							context.PrintLn(LanguageManager.Get("terminal.command.settings.list.item_trigger", new object[] { path }));
+						else
+							context.PrintLn(LanguageManager.Get("terminal.command.settings.list.item", new object[] { path, handler.Value.ToVisualString() }));
+					} catch (Exception) {
+						// Value unavailable (system not running): the path is still listed.
+						context.PrintLn(LanguageManager.Get("terminal.command.settings.list.item_trigger", new object[] { path }));
 					}
 				}
 			}
@@ -149,8 +196,15 @@ namespace Nox.Settings.Commands {
 
 			var value = handler.Value;
 
+			// The stored value wins: it is what the setting will be on the next launch, and handlers
+			// whose UI is not built yet (editor) only have a default one.
+			var stored = Config.Load().Get(new[] { "settings" }.Concat(path).ToArray());
+
+			if (stored != null)
+				value = stored.ToObject<object>();
+
 			if (printing)
-				context.PrintLn($"Value: {value.ToVisualString()}");
+				context.PrintLn(LanguageManager.Get("terminal.command.settings.get.value", new object[] { value.ToVisualString() }));
 
 			context.SetResult(value);
 			return true;
@@ -176,10 +230,8 @@ namespace Nox.Settings.Commands {
 				return true;
 			}
 
-			// Try to parse and set the value via Config
-			var config = Config.Load();
-			var configPath = new[] { "settings" }.Concat(path).ToArray();
-
+			// The handler applies AND persists the value (its OnValueChanged does both): the command
+			// only reports the outcome.
 			try {
 				object parsedValue;
 
@@ -191,8 +243,13 @@ namespace Nox.Settings.Commands {
 				else
 					parsedValue = valueStr;
 
-				config.Set(configPath, parsedValue);
-				config.Save();
+				if (!handler.Apply(parsedValue)) {
+					if (printing)
+						context.PrintLn(LanguageManager.Get("terminal.command.settings.set.rejected", new object[] { pathStr }));
+
+					context.SetResult(false);
+					return true;
+				}
 
 				if (printing)
 					context.PrintLn(LanguageManager.Get("terminal.command.settings.set.success", new object[] { pathStr, valueStr }));
