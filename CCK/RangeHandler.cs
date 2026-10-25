@@ -108,6 +108,19 @@ namespace Nox.CCK.Settings {
 
 		abstract protected void OnValueChanged(float value);
 
+		/// <summary>See <see cref="IHandler.Apply"/>.</summary>
+		public bool Apply(object value) {
+			if (value == null)
+				return false;
+
+			try {
+				SetValue(System.Convert.ToSingle(value, System.Globalization.CultureInfo.InvariantCulture));
+				return true;
+			} catch (System.Exception) {
+				return false;
+			}
+		}
+		
 		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu)
 			=> UniTask.FromResult(GetContent(transform, menu));
 

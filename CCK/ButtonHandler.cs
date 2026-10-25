@@ -21,6 +21,15 @@ namespace Nox.CCK.Settings {
 		public virtual bool IsActive
 			=> true;
 
+		/// <summary>
+		/// See <see cref="IHandler.Apply"/>. Declared here (and not only in the derived handlers) on
+		/// purpose: the interface is implemented by this class, so its members are mapped against this
+		/// class. A method added by a derived handler without an override here never implements
+		/// <see cref="IHandler.Apply"/>, and the call falls back to the interface default (false).
+		/// </summary>
+		public virtual bool Apply(object value)
+			=> false;
+
 		public virtual void OnUpdated(IHandler handler) { }
 
 		public virtual int Order => 0;

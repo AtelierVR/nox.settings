@@ -35,6 +35,12 @@ namespace Nox.Settings {
 		public bool IsTriggerable => false;
 
 		/// <summary>
+		/// Applies a value coming from outside the UI (terminal, config…), so the change takes effect
+		/// instead of only being stored. Returns false when the handler cannot take a value that way.
+		/// </summary>
+		public bool Apply(object value) => false;
+
+		/// <summary>
 		/// Handle a click event on the handler.
 		/// </summary>
 		public void OnClick(IContext context) { }

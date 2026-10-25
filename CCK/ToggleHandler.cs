@@ -27,7 +27,6 @@ namespace Nox.CCK.Settings {
 
 		public bool Value => _value;
 		object IHandler.Value => Value;
-
 		abstract protected GameObject GetPrefab();
 
 		public virtual GameObject GetContent(RectTransform transform, IMenu menu) {
@@ -77,6 +76,19 @@ namespace Nox.CCK.Settings {
 			UpdateToggle();
 			if (notify)
 				OnValueChanged(value);
+		}
+
+		/// <summary>See <see cref="IHandler.Apply"/>.</summary>
+		public bool Apply(object value) {
+			if (value == null)
+				return false;
+
+			try {
+				SetValue(System.Convert.ToBoolean(value));
+				return true;
+			} catch (System.Exception) {
+				return false;
+			}
 		}
 	}
 }

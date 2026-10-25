@@ -43,6 +43,22 @@ namespace Nox.CCK.Settings {
 
 		virtual protected void OnValueChanged(string value) { }
 
+		/// <summary>See <see cref="IHandler.Apply"/>.</summary>
+		public override bool Apply(object value) {
+			var text = value as string ?? value?.ToString();
+
+			if (string.IsNullOrEmpty(text))
+				return false;
+
+			// Options loaded: the value must be one of them (an invalid value is refused). No option yet
+			// (packs not registered, menu not built): the value is forwarded, the handler decides.
+			if (_options.Count > 0 && !_options.ContainsKey(text))
+				return false;
+
+			SetValue(text);
+			return true;
+		}
+
 		virtual protected void SetValue(string value, bool notify = true) {
 			if (_options.Count == 0)
 				return;
