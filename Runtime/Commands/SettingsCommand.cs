@@ -19,12 +19,12 @@ namespace Nox.Settings.Commands {
 			=> LanguageManager.Get($"terminal.command.{GetName()}.short");
 
 		public string GetUsage()
-			=> $"{CommandWithPrefix} <list|get|set|trigger> [path] [value]";
+			=> $"{CommandWithPrefix} <list|get|set|add|remove|trigger> [path] [value]";
 
 		private string CommandWithPrefix
 			=> GetName();
 
-		private readonly string[] _subCommands = { "list", "get", "set", "trigger" };
+		private readonly string[] _subCommands = { "list", "get", "set", "add", "remove", "trigger" };
 
 		public string[] AutoComplete(string input, Terminal.IContext context = null) {
 			// The context is not required: the suggestions only depend on the registered handlers.
@@ -62,18 +62,26 @@ namespace Nox.Settings.Commands {
 			if (parts.Length >= 2) {
 				var subCommand = parts[1].ToLower();
 
-				if (subCommand is "get" or "set" or "trigger") {
-					// "settings get accessibility.interface.language " : the path is complete, there is
-					// nothing more to suggest (a "set" expects a value that cannot be guessed).
-					if (input.EndsWith(' ') && parts.Length >= 3)
-						return Array.Empty<string>();
+				if (subCommand is "get" or "set" or "add" or "remove" or "trigger") {
+					// "settings get accessibility.interface.language " : the path is complete, there is nothing
+					// more to suggest. A value command is the exception: the handler may know the values it takes.
+					if (input.EndsWith(' ') && parts.Length >= 3) {
+						if (subCommand is "get" or "trigger")
+							return Array.Empty<string>();
+
+						return SuggestValues(parts[2], string.Empty);
+					}
+
+					// "settings set xr.menu.anchor he" : finish the value being typed.
+					if (subCommand is "set" or "add" or "remove" && parts.Length >= 4)
+						return SuggestValues(parts[2], parts[3]);
 
 					var partial = parts.Length >= 3 ? parts[2] : string.Empty;
 					var paths   = new List<string>();
 
 					foreach (var handler in Main.Handlers) {
 						// Only the handler path is read here: IsActive/IsTriggerable depend on running systems
-						// (XR, controllers…) that do not exist out of Play mode, and used to throw.
+						// (XR, controllers...) that do not exist out of Play mode, and used to throw.
 						try {
 							if (subCommand == "trigger" && !handler.IsTriggerable)
 								continue;
@@ -95,6 +103,33 @@ namespace Nox.Settings.Commands {
 			}
 
 			return Array.Empty<string>();
+		}
+
+		/// <summary>
+		/// Values the handler at <paramref name="path"/> accepts, filtered by what is being typed. Empty when
+		/// the handler has no enumerated value (a range, a free text) or cannot be resolved.
+		/// </summary>
+		private static string[] SuggestValues(string path, string partial) {
+			if (string.IsNullOrEmpty(path))
+				return Array.Empty<string>();
+
+			IHandler handler;
+
+			try {
+				handler = Main.Instance.Get(path.Split('.'));
+			} catch (Exception) {
+				return Array.Empty<string>(); // A handler that cannot be resolved is simply not suggested.
+			}
+
+			var values = handler?.Suggestions;
+
+			if (values == null || values.Length == 0)
+				return Array.Empty<string>();
+
+			return values
+				.Where(v => !string.IsNullOrEmpty(v) && v.StartsWith(partial, StringComparison.OrdinalIgnoreCase))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToArray();
 		}
 
 		public UniTask<bool> Execute(string input, Terminal.IContext context = null)
@@ -125,6 +160,10 @@ namespace Nox.Settings.Commands {
 					return HandleGet(parts, context, printing);
 				case "set":
 					return HandleSet(parts, context, printing);
+				case "add":
+					return HandleChange(parts, context, printing, add: true);
+				case "remove":
+					return HandleChange(parts, context, printing, add: false);
 				case "trigger":
 					return HandleTrigger(parts, context, printing);
 				default:
@@ -138,7 +177,7 @@ namespace Nox.Settings.Commands {
 			var handlers = new List<IHandler>();
 
 			foreach (var handler in Main.Handlers) {
-				// IsActive can depend on a running system (XR, controllers…) missing out of Play mode.
+				// IsActive can depend on a running system (XR, controllers...) missing out of Play mode.
 				try {
 					if (handler.IsActive)
 						handlers.Add(handler);
@@ -219,7 +258,10 @@ namespace Nox.Settings.Commands {
 
 			var pathStr = parts[2];
 			var path = pathStr.Split('.');
-			var valueStr = parts[3];
+
+			// A handler that holds several values takes them one after the other: the rest of the line is its
+			// value, spaces included.
+			var valueStr = string.Join(" ", parts.Skip(3));
 
 			var handler = Main.Instance.Get(path);
 
@@ -264,8 +306,62 @@ namespace Nox.Settings.Commands {
 			return true;
 		}
 
-		private static bool HandleTrigger(string[] parts, Terminal.IContext context, bool printing) {
-			if (parts.Length < 3) {
+		/// <summary>
+		/// Adds or removes elements of a handler that holds several values at once, the other ones being kept.
+		/// </summary>
+		/// <param name="parts">Words typed in the terminal.</param>
+		/// <param name="context">Terminal context, printed to and given the result.</param>
+		/// <param name="printing">Whether the context shows what is printed.</param>
+		/// <param name="add">Whether the elements are added or removed.</param>
+		private static bool HandleChange(string[] parts, Terminal.IContext context, bool printing, bool add) {
+			var name = add ? "add" : "remove";
+
+			if (parts.Length < 4) {
+				if (printing)
+					context.PrintLn(LanguageManager.Get($"terminal.command.settings.{name}.usage"));
+				return true;
+			}
+
+			var pathStr = parts[2];
+			var path = pathStr.Split('.');
+
+			// The rest of the line: several elements can be added or removed at once.
+			var valueStr = string.Join(" ", parts.Skip(3));
+
+			var handler = Main.Instance.Get(path);
+
+			if (handler == null) {
+				if (printing)
+					context.PrintLn(LanguageManager.Get("terminal.command.settings.set.not_found", new object[] { pathStr }));
+				context.SetResult(false);
+				return true;
+			}
+
+			try {
+				var changed = add ? handler.Add(valueStr) : handler.Remove(valueStr);
+
+				if (!changed) {
+					if (printing)
+						context.PrintLn(LanguageManager.Get("terminal.command.settings.set.rejected", new object[] { pathStr }));
+
+					context.SetResult(false);
+					return true;
+				}
+
+				if (printing)
+					context.PrintLn(LanguageManager.Get($"terminal.command.settings.{name}.success", new object[] { pathStr, valueStr }));
+
+				context.SetResult(valueStr);
+			} catch (Exception ex) {
+				if (printing)
+					context.PrintLn(LanguageManager.Get("terminal.command.settings.set.error", new object[] { ex.Message }));
+				context.SetResult(false);
+			}
+
+			return true;
+		}
+
+		private static bool HandleTrigger(string[] parts, Terminal.IContext context, bool printing) {			if (parts.Length < 3) {
 				if (printing)
 					context.PrintLn(LanguageManager.Get("terminal.command.settings.trigger.usage"));
 				return true;

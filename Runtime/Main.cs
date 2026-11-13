@@ -92,19 +92,22 @@ namespace Nox.Settings.Runtime {
 			=> PropagateHandlerUpdated(null);
 
 		/// <summary>A value changed: the settings UI rereads everything to stay in sync.</summary>
-		private static void OnConfigChanged(string _)
+		private static void OnConfigChanged(string[] _, object __, object ___)
 			=> PropagateHandlerUpdated(null);
 
 		/// <summary>The config was reloaded from disk: every handler applies its stored value.</summary>
 		private static void OnConfigReloaded() {
 			foreach (var handler in Handlers.ToArray()) {
-				var path  = new[] { "settings" }.Concat(handler.Path).ToArray();
-				var token = Config.Load().Get(path);
+				var path = new[] { "settings" }.Concat(handler.Path).ToArray();
 
-				if (token == null)
-					continue;
-
+				// Reading the stored value can fail on a path the config cannot hold (a scalar where the
+				// handler expects an object): that setting is simply not restored.
 				try {
+					var token = Config.Load().Get(path);
+
+					if (token == null)
+						continue;
+
 					handler.Apply(token.ToObject<object>());
 				} catch (Exception exception) {
 					Instance?.CoreAPI?.LoggerAPI?.LogError($"Unable to apply the setting {string.Join(".", handler.Path)}: {exception.Message}");

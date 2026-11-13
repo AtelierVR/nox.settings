@@ -7,6 +7,7 @@ namespace Nox.Settings.Runtime {
 		public static IHandler[] GetHandlers()
 			=> new IHandler[] {
 				new Language(),
+				new Theme(),
 				new Brightness(),
 				new BloomIntensity(),
 				new Quality(),
@@ -21,6 +22,7 @@ namespace Nox.Settings.Runtime {
 				new AntiAliasing(),
 				new MSAA(),
 				new Framerate(),
+				new FpsCounterDisplay(),
 				new FieldOfView()
 			};
 

@@ -51,6 +51,20 @@ MonoBehaviour:
       value: "{1} s"
     - key: settings.entry.accessibility.interface.language.label
       value: "Language"
+    - key: settings.entry.accessibility.interface.theme.label
+      value: "Theme"
+    - key: theme.nox
+      value: "Nox"
+    - key: theme.mint
+      value: "Mint"
+    - key: theme.violet
+      value: "Violet"
+    - key: theme.amber
+      value: "Amber"
+    - key: theme.black
+      value: "Black"
+    - key: theme.eyeburning
+      value: "Eye burning"
     - key: settings.entry.accessibility.visual.brightness.label
       value: "Brightness"
     - key: settings.entry.accessibility.visual.bloom_intensity.label
@@ -59,6 +73,14 @@ MonoBehaviour:
       value: "Visual"
     - key: settings.group.accessibility.interface.label
       value: "Interface"
+    - key: settings.page.mirror.title
+      value: "Mirror Settings"
+    - key: settings.page.mirror.label
+      value: "Mirror"
+    - key: settings.group.mirror.general.label
+      value: "General"
+    - key: settings.group.mirror.personal.label
+      value: "Personal"
     - key: settings.page.graphic.title
       value: "Graphics Settings"
     - key: settings.page.graphic.label
@@ -155,6 +177,8 @@ MonoBehaviour:
       value: "{0} FPS"
     - key: settings.entry.performances.framerate.label
       value: "Framerate"
+    - key: settings.entry.performances.fps_counter.label
+      value: "FPS counter"
     - key: settings.group.performances.general.label
       value: "General"
     - key: settings.page.performances.title
@@ -273,6 +297,20 @@ MonoBehaviour:
       value: "{1} s"
     - key: settings.entry.accessibility.interface.language.label
       value: "Langue"
+    - key: settings.entry.accessibility.interface.theme.label
+      value: "Thème"
+    - key: theme.nox
+      value: "Nox"
+    - key: theme.mint
+      value: "Menthe"
+    - key: theme.violet
+      value: "Violet"
+    - key: theme.amber
+      value: "Ambre"
+    - key: theme.black
+      value: "Noir"
+    - key: theme.eyeburning
+      value: "Éblouissant"
     - key: settings.entry.accessibility.visual.brightness.label
       value: "Luminosité"
     - key: settings.entry.accessibility.visual.bloom_intensity.label
@@ -281,6 +319,14 @@ MonoBehaviour:
       value: "Visuel"
     - key: settings.group.accessibility.interface.label
       value: "Interface"
+    - key: settings.page.mirror.title
+      value: "Paramètres du miroir"
+    - key: settings.page.mirror.label
+      value: "Miroir"
+    - key: settings.group.mirror.general.label
+      value: "Général"
+    - key: settings.group.mirror.personal.label
+      value: "Personnel"
     - key: settings.page.graphic.title
       value: "Paramètres graphiques"
     - key: settings.page.graphic.label
@@ -435,3 +481,5 @@ MonoBehaviour:
       value: "Le paramètre '{0}' n'est pas déclenchable."
     - key: terminal.command.settings.trigger.success
       value: "Paramètre '{0}' déclenché."
+    - key: settings.entry.performances.fps_counter.label
+      value: "Compteur FPS"

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nox.CCK.Language;
+using Nox.CCK.Theme;
 using Nox.CCK.Utils;
 using Nox.Settings.Runtime;
 using UnityEngine;
@@ -10,37 +11,37 @@ using UnityEngine.UI;
 
 namespace Nox.Settings.Clients {
 	public class SettingsComponent : MonoBehaviour {
-		public  Image                   labelIcon;
-		public  RectTransform           content;
-		public  GameObject              header;
-		public  TextLanguage            title;
+		public Image labelIcon;
+		public RectTransform content;
+		public GameObject header;
+		public TextLanguage title;
 		private CancellationTokenSource _token;
-		public  RectTransform           navigation;
-		public  GameObject              leftContainer;
-		public  TMPro.TMP_InputField    searchField;
-		public  Button                  searchButton;
-		public  Image                   searchImage;
+		public RectTransform navigation;
+		public GameObject leftContainer;
+		public TMPro.TMP_InputField searchField;
+		public Button searchButton;
+		public Image searchImage;
 		private CancellationTokenSource _searchToken;
 
 		public SettingsPage Page;
 
 		private readonly Dictionary<IHandler, GameObject> _handlerBoxes = new();
-		private readonly Dictionary<GameObject, IHandler[]> _groupBoxes  = new();
-		private readonly Dictionary<string, GameObject>    _navigationButtons = new();
+		private readonly Dictionary<GameObject, IHandler[]> _groupBoxes = new();
+		private readonly Dictionary<string, GameObject> _navigationButtons = new();
 
 		public static (GameObject, SettingsComponent) Generate(SettingsPage settingsPage, RectTransform parent) {
-			var iconAsset      = Client.GetAsset<GameObject>("ui:prefabs/header_icon.prefab");
-			var labelAsset     = Client.GetAsset<GameObject>("ui:prefabs/header_label.prefab");
+			var iconAsset = Client.GetAsset<GameObject>("ui:prefabs/header_icon.prefab");
+			var labelAsset = Client.GetAsset<GameObject>("ui:prefabs/header_label.prefab");
 			var withTitleAsset = Client.GetAsset<GameObject>("ui:prefabs/with_title.prefab");
-			var listAsset      = Client.GetAsset<GameObject>("ui:prefabs/list.prefab");
-			var scrollAsset    = Client.GetAsset<GameObject>("ui:prefabs/scroll.prefab");
+			var listAsset = Client.GetAsset<GameObject>("ui:prefabs/list.prefab");
+			var scrollAsset = Client.GetAsset<GameObject>("ui:prefabs/scroll.prefab");
 			var containerAsset = Client.GetAsset<GameObject>("ui:prefabs/container.prefab");
 
 			var content = Instantiate(Client.GetAsset<GameObject>("ui:prefabs/split.prefab"), parent);
 
 			var component = content.AddComponent<SettingsComponent>();
 			component.Page = settingsPage;
-			content.name   = $"[{settingsPage.GetKey()}_{content.GetId()}]";
+			content.name = $"[{settingsPage.GetKey()}_{content.GetId()}]";
 
 			var splitContent = Reference.GetComponent<RectTransform>("content", content);
 
@@ -51,10 +52,10 @@ namespace Nox.Settings.Clients {
 				Client.GetAsset<GameObject>("ui:prefabs/with_search.prefab"),
 				Reference.GetComponent<RectTransform>("content", component.leftContainer)
 			);
-			var searchHeader       = Reference.GetReference("header", withSearch);
-			component.searchField  = Reference.GetComponent<TMPro.TMP_InputField>("input", searchHeader);
+			var searchHeader = Reference.GetReference("header", withSearch);
+			component.searchField = Reference.GetComponent<TMPro.TMP_InputField>("input", searchHeader);
 			component.searchButton = Reference.GetComponent<Button>("submit", searchHeader);
-			component.searchImage  = component.searchButton
+			component.searchImage = component.searchButton
 				? Reference.GetComponent<Image>("image", component.searchButton.gameObject)
 				: null;
 
@@ -93,17 +94,17 @@ namespace Nox.Settings.Clients {
 			var withTitle = Instantiate(withTitleAsset, Reference.GetComponent<RectTransform>("content", container));
 
 			component.header = Reference.GetReference("header", withTitle);
-			var icon  = Instantiate(iconAsset, Reference.GetComponent<RectTransform>("before", component.header));
+			var icon = Instantiate(iconAsset, Reference.GetComponent<RectTransform>("before", component.header));
 			var title = Instantiate(labelAsset, Reference.GetComponent<RectTransform>("content", component.header));
 
-			component.labelIcon        = Reference.GetComponent<Image>("image", icon);
-			component.title            = Reference.GetComponent<TextLanguage>("text", title);
+			component.labelIcon = Reference.GetComponent<Image>("image", icon);
+			component.title = Reference.GetComponent<TextLanguage>("text", title);
 			component.labelIcon.sprite = Client.GetAsset<Sprite>("ui:icons/globe.png");
 
 			var contentDash = Reference.GetComponent<RectTransform>("content", withTitle);
 			// setup scroll + list
 			var scroll = Instantiate(scrollAsset, contentDash);
-			var list   = Instantiate(listAsset, Reference.GetComponent<RectTransform>("content", scroll));
+			var list = Instantiate(listAsset, Reference.GetComponent<RectTransform>("content", scroll));
 			component.content = Reference.GetComponent<RectTransform>("content", list);
 
 
@@ -128,7 +129,7 @@ namespace Nox.Settings.Clients {
 				? await settings.GetIcon()
 				: null;
 
-			labelIcon.sprite = sprite 
+			labelIcon.sprite = sprite
 				?? await Client.GetAssetAsync<Sprite>("ui:icons/settings.png");
 		}
 
@@ -136,7 +137,7 @@ namespace Nox.Settings.Clients {
 			var btn = await Client.GetAssetAsync<GameObject>("ui:prefabs/btn_icon.prefab");
 
 			var pages = Page.GetCategories();
-			var ids   = new HashSet<string>(pages.Select(p => p.GetId()));
+			var ids = new HashSet<string>(pages.Select(p => p.GetId()));
 
 			// Keep the buttons that are still needed: only the ones that must go are
 			// removed, so a kept page does not reload its icon.
@@ -189,11 +190,14 @@ namespace Nox.Settings.Clients {
 				o.transform.SetSiblingIndex(i);
 			}
 
+			if (navigation)
+				ThemeManager.Apply(navigation.gameObject);
+
 			UpdateLayout.UpdateImmediate(leftContainer);
 		}
 
 		private static async UniTask UpdateIcon(CategoryDetails category, GameObject o) {
-			var image          = Reference.GetComponent<Image>("image", o);
+			var image = Reference.GetComponent<Image>("image", o);
 			var imageContainer = Reference.GetComponent<RectTransform>("image_container", o);
 			if (!image.sprite)
 				imageContainer.gameObject.SetActive(false);
@@ -206,14 +210,31 @@ namespace Nox.Settings.Clients {
 			UpdateLayout.UpdateImmediate(o);
 		}
 
+		/// <summary>
+		/// A value changed: only the rows whose <see cref="IHandler.IsActive"/> depends on it are shown or
+		/// hidden, and the page is laid out again only when one of them actually changed. Sliding a value used
+		/// to rebuild the whole page on every tick, which cost several milliseconds per frame.
+		/// </summary>
 		private void OnHandlerValueChanged(IHandler _) {
+			var changed = false;
+
 			foreach (var (h, go) in _handlerBoxes)
-				if (go)
+				if (go && go.activeSelf != h.IsActive) {
 					go.SetActive(h.IsActive);
+					changed = true;
+				}
+
 			foreach (var (groupBox, handlers) in _groupBoxes)
-				if (groupBox)
-					groupBox.SetActive(handlers.Any(h => h.IsActive));
-			UpdateLayout.UpdateImmediate(content);
+				if (groupBox) {
+					var active = handlers.Any(h => h.IsActive);
+					if (groupBox.activeSelf == active)
+						continue;
+					groupBox.SetActive(active);
+					changed = true;
+				}
+
+			if (changed)
+				UpdateLayout.UpdateImmediate(content);
 		}
 
 		private void OnDestroy() {
@@ -224,12 +245,9 @@ namespace Nox.Settings.Clients {
 			_searchToken?.Cancel();
 			_searchToken?.Dispose();
 			_searchToken = null;
-			if (searchField) {
-				searchField.onSubmit.RemoveListener(OnSearchSubmit);
-				searchField.onValueChanged.RemoveListener(OnSearchChanged);
-			}
-			if (searchButton)
-				searchButton.onClick.RemoveListener(OnSearchButton);
+			searchField?.onSubmit.RemoveListener(OnSearchSubmit);
+			searchField?.onValueChanged.RemoveListener(OnSearchChanged);
+			searchButton?.onClick.RemoveListener(OnSearchButton);
 		}
 
 		/// <summary>Applied when the search field is submitted (Enter or the search button).</summary>
@@ -243,7 +261,6 @@ namespace Nox.Settings.Clients {
 		private void OnSearchChanged(string query) {
 			if (Page == null)
 				return;
-			// Debounce while typing so the list is not rebuilt on every keystroke.
 			_searchToken?.Cancel();
 			_searchToken?.Dispose();
 			_searchToken = new CancellationTokenSource();
@@ -291,7 +308,7 @@ namespace Nox.Settings.Clients {
 
 			if (!content) return;
 
-			var box  = Client.GetAsset<GameObject>("ui:prefabs/box.prefab");
+			var box = Client.GetAsset<GameObject>("ui:prefabs/box.prefab");
 			var list = Client.GetAsset<GameObject>("ui:prefabs/list.prefab");
 
 			Main.OnHandlerUpdated.RemoveListener(OnHandlerValueChanged);
@@ -334,7 +351,7 @@ namespace Nox.Settings.Clients {
 				foreach (var handler in group.Handlers) {
 					token.ThrowIfCancellationRequested();
 
-					var handlerBox = await handler.GetContentAsync(cont, menu)
+					var handlerBox = await handler.GetContentAsync(cont, menu, token)
 						?? handler.GetContent(cont, menu);
 					token.ThrowIfCancellationRequested();
 					if (!handlerBox) {
@@ -356,6 +373,9 @@ namespace Nox.Settings.Clients {
 			}
 
 			token.ThrowIfCancellationRequested();
+			// Every group box, list and row was built asynchronously, after the page was painted: the theme is
+			// applied to the whole content once it is complete.
+			ThemeManager.Apply(content.gameObject);
 			UpdateLayout.UpdateImmediate(content);
 			Main.OnHandlerUpdated.AddListener(OnHandlerValueChanged);
 		}
