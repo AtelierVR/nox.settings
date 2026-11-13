@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nox.CCK.Language;
+using Nox.CCK.Theme;
 using Nox.CCK.Utils;
 using Nox.Settings;
 using Nox.UI;
@@ -29,6 +31,24 @@ namespace Nox.CCK.Settings {
 		/// </summary>
 		public virtual bool Apply(object value)
 			=> false;
+
+		/// <summary>
+		/// See <see cref="IHandler.Add"/>. Declared here for the same reason as <see cref="Apply"/>: a derived
+		/// handler that overrides it only implements the interface through this class.
+		/// </summary>
+		public virtual bool Add(object value)
+			=> false;
+
+		/// <summary>See <see cref="IHandler.Remove"/>, declared here for the same reason as <see cref="Apply"/>.</summary>
+		public virtual bool Remove(object value)
+			=> false;
+
+		/// <summary>
+		/// See <see cref="IHandler.Suggestions"/>, declared here for the same reason as <see cref="Apply"/>:
+		/// a button has no enumerated values unless a derived handler says so.
+		/// </summary>
+		public virtual string[] Suggestions
+			=> Array.Empty<string>();
 
 		public virtual void OnUpdated(IHandler handler) { }
 
@@ -71,6 +91,8 @@ namespace Nox.CCK.Settings {
 				SetButtonText(null);
 
 			SetInteractable(_interactable);
+
+			ThemeManager.Apply(go);
 			return go;
 		}
 
@@ -96,8 +118,10 @@ namespace Nox.CCK.Settings {
 			_button = null;
 		}
 
-		public virtual UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu)
-			=> UniTask.FromResult(GetContent(transform, menu));
+		public virtual UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu, CancellationToken cancellationToken = default) {
+			cancellationToken.ThrowIfCancellationRequested();
+			return UniTask.FromResult(GetContent(transform, menu));
+		}
 
 		virtual protected void SetInteractable(bool interactable) {
 			_interactable = interactable;

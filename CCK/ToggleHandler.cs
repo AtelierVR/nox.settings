@@ -1,10 +1,10 @@
+using System.Threading;
 using Cysharp.Threading.Tasks;
-using Nox.CCK.Language;
+using Nox.CCK.Theme;
 using Nox.CCK.Utils;
 using Nox.Settings;
 using Nox.UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nox.CCK.Settings {
 	public abstract class ToggleHandler : IHandler {
@@ -20,8 +20,7 @@ namespace Nox.CCK.Settings {
 		public virtual int CompareTo(IHandler other)
 			=> Order.CompareTo(other.Order);
 
-		private Toggle _toggle;
-		private TextLanguage _textLabel;
+		private ToggleField _field;
 		private bool _value;
 		private string _keyLabel;
 
@@ -34,11 +33,13 @@ namespace Nox.CCK.Settings {
 			var go      = asset.Instantiate(transform);
 			var destroy = go.GetOrAddComponent<DestroyComponent>();
 			destroy.Destroyed.AddListener(OnDestroy);
-			_toggle = Reference.GetComponent<Toggle>("toggle", go);
-			_toggle.onValueChanged.AddListener(OnInternalValueChanged);
-			_textLabel = Reference.GetComponent<TextLanguage>("label", go);
+
+			_field = go.GetOrAddComponent<ToggleField>();
+			_field.OnValueChanged.AddListener(OnInternalValueChanged);
 			UpdateToggle();
 			SetLabelKey(_keyLabel);
+
+			ThemeManager.Apply(go);
 			return go;
 		}
 
@@ -50,25 +51,22 @@ namespace Nox.CCK.Settings {
 
 		public void SetLabelKey(string key) {
 			_keyLabel = key;
-			if (_textLabel)
-				_textLabel.UpdateText(key);
+			_field?.SetLabelKey(key);
 		}
 
 		abstract protected void OnValueChanged(bool value);
 
-		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu)
-			=> UniTask.FromResult(GetContent(transform, menu));
-
-		private void UpdateToggle() {
-			if (!_toggle)
-				return;
-			_toggle.SetIsOnWithoutNotify(_value);
+		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu, CancellationToken cancellationToken = default) {
+			cancellationToken.ThrowIfCancellationRequested();
+			return UniTask.FromResult(GetContent(transform, menu));
 		}
 
+		private void UpdateToggle()
+			=> _field?.SetValue(_value);
+
 		virtual protected void OnDestroy() {
-			if (_toggle)
-				_toggle.onValueChanged.RemoveListener(OnInternalValueChanged);
-			_toggle = null;
+			_field?.OnValueChanged.RemoveListener(OnInternalValueChanged);
+			_field = null;
 		}
 
 		public virtual void SetValue(bool value, bool notify = true) {
@@ -90,5 +88,9 @@ namespace Nox.CCK.Settings {
 				return false;
 			}
 		}
+
+		/// <summary>A toggle only takes two values.</summary>
+		public string[] Suggestions
+			=> new[] { "true", "false" };
 	}
 }

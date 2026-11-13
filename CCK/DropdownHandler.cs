@@ -17,6 +17,10 @@ namespace Nox.CCK.Settings {
 
 		public override bool IsTriggerable => false;
 
+		/// <summary>Keys of the options: exactly what <see cref="Apply"/> accepts.</summary>
+		public override string[] Suggestions
+			=> _options.Keys.ToArray();
+
 		abstract protected IModalBuilder GetModalBuilder(IMenu menu);
 
 		public override GameObject GetContent(RectTransform transform, IMenu menu) {

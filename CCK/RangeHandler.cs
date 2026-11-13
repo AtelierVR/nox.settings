@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nox.CCK.Language;
+using Nox.CCK.Theme;
 using Nox.CCK.Utils;
 using Nox.Settings;
 using Nox.UI;
@@ -67,6 +69,8 @@ namespace Nox.CCK.Settings {
 			SetTypeKey(_keyType);
 			SetValueKey(_keyValue);
 			_range.onValueChanged.AddListener(OnInternalValueChanged);
+
+			ThemeManager.Apply(go);
 			return go;
 		}
 
@@ -120,9 +124,11 @@ namespace Nox.CCK.Settings {
 				return false;
 			}
 		}
-		
-		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu)
-			=> UniTask.FromResult(GetContent(transform, menu));
+
+		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu, CancellationToken cancellationToken = default) {
+			cancellationToken.ThrowIfCancellationRequested();
+			return UniTask.FromResult(GetContent(transform, menu));
+		}
 
 		private void UpdateSlider() {
 			if (!_range)

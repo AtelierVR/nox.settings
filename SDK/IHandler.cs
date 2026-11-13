@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using Nox.UI;
 using UnityEngine;
@@ -35,10 +36,30 @@ namespace Nox.Settings {
 		public bool IsTriggerable => false;
 
 		/// <summary>
-		/// Applies a value coming from outside the UI (terminal, config…), so the change takes effect
+		/// Applies a value coming from outside the UI (terminal, config...), so the change takes effect
 		/// instead of only being stored. Returns false when the handler cannot take a value that way.
 		/// </summary>
 		public bool Apply(object value) => false;
+
+		/// <summary>
+		/// Adds elements to a handler that holds <b>several values at once</b>, so the rest of its value is
+		/// kept. Returns false when the handler holds a single value.
+		/// </summary>
+		/// <param name="value">Elements to add, space separated.</param>
+		public bool Add(object value) => false;
+
+		/// <summary>
+		/// Removes elements from a handler that holds <b>several values at once</b>, leaving the other ones
+		/// untouched. Returns false when the handler holds a single value.
+		/// </summary>
+		/// <param name="value">Elements to remove, space separated.</param>
+		public bool Remove(object value) => false;
+
+		/// <summary>
+		/// Values this handler accepts, for completion (<c>settings set &lt;path&gt; ...</c>). Empty when the value
+		/// is free (a range, a text): there is nothing to enumerate.
+		/// </summary>
+		public string[] Suggestions => Array.Empty<string>();
 
 		/// <summary>
 		/// Handle a click event on the handler.
@@ -53,7 +74,10 @@ namespace Nox.Settings {
 		/// <summary>
 		/// Get the content of the handler as a GameObject asynchronously.
 		/// </summary>
-		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu);
+		/// <param name="transform"></param>
+		/// <param name="menu"></param>
+		/// <param name="cancellationToken"></param>
+		public UniTask<GameObject> GetContentAsync(RectTransform transform, IMenu menu, CancellationToken cancellationToken = default);
 
 		/// <summary>
 		/// Handle updates to the handler.
