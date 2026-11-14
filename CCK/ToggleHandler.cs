@@ -13,6 +13,10 @@ namespace Nox.CCK.Settings {
 		public virtual bool IsActive
 			=> true;
 
+		/// <summary>See <see cref="IHandler.IsEditable"/>.</summary>
+		public virtual bool IsEditable
+			=> _interactable;
+
 		public virtual void OnUpdated(IHandler handler) { }
 
 		public virtual int Order => 0;
@@ -23,6 +27,7 @@ namespace Nox.CCK.Settings {
 		private ToggleField _field;
 		private bool _value;
 		private string _keyLabel;
+		private bool _interactable = true;
 
 		public bool Value => _value;
 		object IHandler.Value => Value;
@@ -38,6 +43,7 @@ namespace Nox.CCK.Settings {
 			_field.OnValueChanged.AddListener(OnInternalValueChanged);
 			UpdateToggle();
 			SetLabelKey(_keyLabel);
+			RefreshEditable();
 
 			ThemeManager.Apply(go);
 			return go;
@@ -52,6 +58,17 @@ namespace Nox.CCK.Settings {
 		public void SetLabelKey(string key) {
 			_keyLabel = key;
 			_field?.SetLabelKey(key);
+		}
+
+		virtual protected void SetInteractable(bool interactable) {
+			_interactable = interactable;
+			RefreshEditable();
+		}
+
+		/// <summary>Re-applies <see cref="IsEditable"/> on the widget, after the availability changed.</summary>
+		protected void RefreshEditable() {
+			if (_field && _field.toggle)
+				_field.toggle.interactable = IsEditable;
 		}
 
 		abstract protected void OnValueChanged(bool value);

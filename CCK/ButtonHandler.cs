@@ -23,6 +23,10 @@ namespace Nox.CCK.Settings {
 		public virtual bool IsActive
 			=> true;
 
+		/// <summary>See <see cref="IHandler.IsEditable"/>.</summary>
+		public virtual bool IsEditable
+			=> _interactable;
+
 		/// <summary>
 		/// See <see cref="IHandler.Apply"/>. Declared here (and not only in the derived handlers) on
 		/// purpose: the interface is implemented by this class, so its members are mapped against this
@@ -125,9 +129,13 @@ namespace Nox.CCK.Settings {
 
 		virtual protected void SetInteractable(bool interactable) {
 			_interactable = interactable;
-			if (!_button)
-				return;
-			_button.interactable = interactable;
+			RefreshEditable();
+		}
+
+		/// <summary>Re-applies <see cref="IsEditable"/> on the widget, after the availability changed.</summary>
+		protected void RefreshEditable() {
+			if (_button)
+				_button.interactable = IsEditable;
 		}
 	}
 }

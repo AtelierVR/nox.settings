@@ -17,6 +17,10 @@ namespace Nox.CCK.Settings {
 		public virtual bool IsActive
 			=> true;
 
+		/// <summary>See <see cref="IHandler.IsEditable"/>.</summary>
+		public virtual bool IsEditable
+			=> _interactable;
+
 		public virtual void OnUpdated(IHandler handler) { }
 
 		public virtual int Order
@@ -36,6 +40,7 @@ namespace Nox.CCK.Settings {
 		private string _keyLabel;
 		private string _keyType = "settings.range.type.empty";
 		private string _keyValue = "settings.range.value.float";
+		private bool _interactable = true;
 
 		private float Min
 			=> Mathf.Ceil(_min / Step) * Step;
@@ -69,6 +74,7 @@ namespace Nox.CCK.Settings {
 			SetTypeKey(_keyType);
 			SetValueKey(_keyValue);
 			_range.onValueChanged.AddListener(OnInternalValueChanged);
+			RefreshEditable();
 
 			ThemeManager.Apply(go);
 			return go;
@@ -99,6 +105,17 @@ namespace Nox.CCK.Settings {
 			_keyValue = key;
 			if (_textValue)
 				_textValue.UpdateText(key);
+		}
+
+		virtual protected void SetInteractable(bool interactable) {
+			_interactable = interactable;
+			RefreshEditable();
+		}
+
+		/// <summary>Re-applies <see cref="IsEditable"/> on the widget, after the availability changed.</summary>
+		protected void RefreshEditable() {
+			if (_range)
+				_range.interactable = IsEditable;
 		}
 
 		virtual protected void OnDestroy() {

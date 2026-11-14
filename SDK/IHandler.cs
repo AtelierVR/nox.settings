@@ -27,6 +27,13 @@ namespace Nox.Settings {
 		public bool IsActive { get; }
 
 		/// <summary>
+		/// Whether the handler can be edited. An active handler that is not editable stays visible but
+		/// is shown disabled, which is how a feature that is currently unavailable is presented
+		/// (missing headset, system not running...) instead of vanishing from the page.
+		/// </summary>
+		public bool IsEditable => true;
+
+		/// <summary>
 		/// Order of the handler for sorting.
 		/// </summary>
 		public int Order { get; }

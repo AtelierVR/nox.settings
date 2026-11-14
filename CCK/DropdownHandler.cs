@@ -84,7 +84,7 @@ namespace Nox.CCK.Settings {
 			_interactable = interactable;
 			if (!_button)
 				return;
-			_button.interactable = interactable && menuIsModal;
+			_button.interactable = IsEditable && menuIsModal;
 		}
 	}
 }
