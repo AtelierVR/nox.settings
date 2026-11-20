@@ -348,8 +348,12 @@ namespace Nox.Settings.Clients {
 
 				cont = Reference.GetComponent<RectTransform>("content", listBox);
 				var menu = Page.GetMenu();
+				var built = 0;
 				foreach (var handler in group.Handlers) {
 					token.ThrowIfCancellationRequested();
+
+					if (++built % 4 == 0)
+						await UniTask.Yield(token);
 
 					var handlerBox = await handler.GetContentAsync(cont, menu, token)
 						?? handler.GetContent(cont, menu);
